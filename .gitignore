@@ -5,6 +5,7 @@
 !.gitignore
 !.bashrc
 !.zshrc
+!README.md
 
 # try to keep most config here 
 !.config
@@ -14,8 +15,3 @@
 !.termux
 .termux/shell
 .termux/font*
-
-# symlinks to 
-# !.shortcuts
-# !.mpd
-
