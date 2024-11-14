@@ -1,0 +1,47 @@
+[alias]
+	a = "add"
+	aa = "add --all"
+	ap = "add --patch"
+	c = "commit -m"
+	ca = "commit --amend"
+	ci = "commit -v"
+	co = "checkout"
+	create-branch = "!sh -c 'git push origin HEAD:refs/heads/$1 && git fetch origin && git branch --track $1 origin/$1 && cd . && git checkout $1' -"
+	delete-branch = "!sh -c 'git push origin :refs/heads/$1 && git remote prune origin && git branch -D $1' -"
+	di = "diff"
+	dic = "diff --cached"
+	l = "log --graph --abbrev-commit --decorate --all --date=relative --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)'"
+	merge-branch = "!git checkout master && git merge @{-1}"
+	out = "log origin..HEAD"
+	pl = "pull"
+	plre = "pull --rebase"
+	pr = "!hub pull-request"
+	ps = "push"
+	st = "status"
+	up = "!git fetch origin && git rebase origin/main"
+
+[color]
+	ui = "auto"
+
+[core]
+	autocrlf = "input"
+	quotepath = "false"
+
+[credential]
+	helper = "store"
+
+[init]
+	defaultBranch = "main"
+
+[mergetool]
+	keepBackup = "false"
+
+[pull]
+	rebase = "false"
+
+[push]
+	default = "current"
+
+[user]
+	email = "jon@suderman.net"
+	name = "Jon Suderman"

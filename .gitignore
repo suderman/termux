@@ -1,0 +1,21 @@
+# ignore everything!
+/*
+
+# except these...
+!.gitignore
+!.bashrc
+!.zshrc
+
+# try to keep most config here 
+!.config
+.config/pulse
+
+# or here
+!.termux
+.termux/shell
+.termux/font*
+
+# symlinks to 
+# !.shortcuts
+# !.mpd
+

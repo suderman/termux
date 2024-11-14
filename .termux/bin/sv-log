@@ -1,0 +1,3 @@
+if [ -e "$PREFIX/var/log/sv/$1/current" ]; then
+  tail -f $PREFIX/var/log/sv/$1/current 
+fi
