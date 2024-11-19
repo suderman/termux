@@ -1,17 +1,3 @@
-# ignore everything!
-/*
-
-# except these...
-!.gitignore
-!.bashrc
-!.zshrc
-!README.md
-
-# try to keep most config here 
-!.config
-.config/pulse
-
-# or here
-!.termux
-.termux/shell
-.termux/font*
+/config/pulse
+/shell
+/font*

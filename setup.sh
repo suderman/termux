@@ -5,10 +5,17 @@
 # HOME=/data/data/com.termux/files/home
 # -- add these too -- 
 export XDG_DATA_HOME="$HOME/.local/share"
-export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_CONFIG_HOME="$HOME/.termux/config"
+
+# Path to local bin directory
+bin=$HOME/.termux/bin
+
+# Ensure these hidden directories are symlinked into ~/.termux/*
+$bin/symlink $HOME/.termux/config $HOME/.config
+$bin/symlink $HOME/.termux/shortcuts $HOME/.shortcuts
 
 # termux tooling
-pkg install -y termux-api termux-tools termux-services
+pkg install -y termux-api termux-tools termux-services git
 
 # openssh
 pkg install -y openssh  
@@ -19,6 +26,15 @@ sv up sshd
 pkg install -y cronie 
 sv-enable crond
 sv up crond
+
+# bash
+pkg install -y bash
+$bin/symlink $XDG_CONFIG_HOME/bash/bashrc $HOME/.bashrc
+
+# zsh + oh-my-zsh
+pkg install -y zsh
+$bin/symlink $XDG_CONFIG_HOME/zsh/zshrc $HOME/.zshrc
+$bin/git-clone-pull https://github.com/ohmyzsh/ohmyzsh $XDG_DATA_HOME/oh-my-zsh
 
 # nvim
 pkg install -y neovim
@@ -31,13 +47,13 @@ nvim +PlugInstall +qall
 pkg install -y tmux
 dir="$XDG_DATA_HOME/tmux/plugins"
 mkdir -p $dir # install tmux plugin manager
-[ -e $dir/tpm ] && git pull || git clone https://github.com/tmux-plugins/tpm $dir/tpm
+$bin/git-clone-pull https://github.com/tmux-plugins/tpm $dir/tpm
 $dir/tpm/bin/install_plugins
 
 # mpd 
+$bin/symlink $XDG_CONFIG_HOME/mpd $HOME/.mpd
 pkg install -y mpd mpc
-dir="$XDG_DATA_HOME/mpd"
-mkdir -p $dir
+mkdir -p $XDG_DATA_HOME/mpd
 sv-enable mpd
 sv up mpd
 
@@ -58,4 +74,9 @@ sv-enable syncthing
 sv up syncthing
 
 # everything else
-pkg install -y build-essential file curl zsh fzf fd yazi rsync mpv python ffmpeg neofetch imagemagick 
+pkg install -y build-essential file curl fzf fd yazi rsync mpv python ffmpeg neofetch imagemagick 
+
+# copy script to directory where rish can execute
+# > rish
+# > sh /sdcard/Android/permission.sh
+cp -f ~/.termux/permission.sh /sdcard/Android/permission.sh

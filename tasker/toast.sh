@@ -1,0 +1,1 @@
+echo toast | termux-toast

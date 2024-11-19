@@ -1,0 +1,19 @@
+#!/data/data/com.termux/files/usr/bin/bash
+
+if [ $# -lt 2 ]; then
+  echo "Usage: symlink target destination"
+  exit 1
+fi
+
+target=$1
+destination=$2
+
+# Ensure destination's parent directory exists
+mkdir -p $(dirname $destination)
+
+# Always destroy destination before creating symbolic link
+# to ensure we're not placing it inside an existing directory
+rm -rf $destination
+
+# Create the symbolic link
+ln -s $target $destination

@@ -15,10 +15,15 @@ Install the latest:
 pkg update
 pkg upgrade
 pkg install git
-rm -rf .termux/
-cd ..
-git clone https://github.com/suderman/termux home/
-cd home/
-bash ./termux/setup.sh
+rm -rf ~/.termux
+git clone https://github.com/suderman/termux ~/.termux
+bash .
+~/.termux/setup.sh
 ```
+
+```sh
+rish
+sh /sdcard/Android/permission.sh
+```
+
 
