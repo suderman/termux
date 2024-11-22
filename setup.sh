@@ -50,12 +50,27 @@ mkdir -p $dir # install tmux plugin manager
 $bin/git-clone-pull https://github.com/tmux-plugins/tpm $dir/tpm
 $dir/tpm/bin/install_plugins
 
+# yt-dlp
+pkg install -y python                                                                                      u0_a377@localhost
+pip install yt-dlp  
+
 # mpd 
 $bin/symlink $XDG_CONFIG_HOME/mpd $HOME/.mpd
 pkg install -y mpd mpc
 mkdir -p $XDG_DATA_HOME/mpd
 sv-enable mpd
 sv up mpd
+
+# mpc-url
+pkg install -y jq iconv wget netcat-openbsd # dependencies
+dir="$PREFIX/var/service/mpc-url"
+mkdir -p $dir/log 
+ln -sf $PREFIX/share/termux-services/svlogger $dir/log/run # link the termux-logger
+echo '#!/data/data/com.termux/files/usr/bin/sh' > $dir/run # write the service file for the application 
+echo "exec $bin/mpc-url loop 2>&1" >> $dir/run
+chmod +x $dir/run
+sv-enable mpc-url
+sv up mpc-url
 
 # mpdscribble
 pkg install -y mpdscribble
@@ -67,7 +82,7 @@ pkg install -y syncthing
 dir="$PREFIX/var/service/syncthing"
 mkdir -p $dir/log 
 ln -sf $PREFIX/share/termux-services/svlogger $dir/log/run # link the termux-logger
-echo "#!/data/data/com.termux/files/usr/bin/sh" > $dir/run # write the service file for the application 
+echo '#!/data/data/com.termux/files/usr/bin/sh' > $dir/run # write the service file for the application 
 echo "exec syncthing --no-browser --no-restart --logflags=0 --no-default-folder --gui-address=http://0.0.0.0:8384 2>&1" >> $dir/run
 chmod +x $dir/run
 sv-enable syncthing
