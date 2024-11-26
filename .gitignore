@@ -1,3 +1,4 @@
 /config/pulse
 /shell
 /font*
+/bin/mpc-url-refresh

@@ -63,10 +63,19 @@ sv up mpd
 
 # mpc-url
 pkg install -y jq iconv wget netcat-openbsd # dependencies
+# refresh every 2 hours
+echo '#!/data/data/com.termux/files/usr/bin/sh' > $bin/mpc-url-refresh 
+echo 'mpc-url flush && mpc-url update' >> $bin/mpc-url-refresh 
+chmod +x $bin/mpc-url-refresh
+termux-job-scheduler --job-id=1 --period-ms=7200000 --network=any --script=$bin/mpc-url-refresh
+# refresh on playlist changes
 dir="$PREFIX/var/service/mpc-url"
 mkdir -p $dir/log 
 ln -sf $PREFIX/share/termux-services/svlogger $dir/log/run # link the termux-logger
 echo '#!/data/data/com.termux/files/usr/bin/sh' > $dir/run # write the service file for the application 
+echo "exec termux-job-scheduler --job-id=1 --period-ms=7200000 --network=any --script=$bin/mpc-url-refresh 2>&1" >> $dir/run
+echo "exec $bin/mpc-url flush 2>&1" >> $dir/run
+echo "exec $bin/mpc-url update 2>&1" >> $dir/run
 echo "exec $bin/mpc-url loop 2>&1" >> $dir/run
 chmod +x $dir/run
 sv-enable mpc-url
