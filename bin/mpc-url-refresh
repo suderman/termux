@@ -1,0 +1,2 @@
+#!/data/data/com.termux/files/usr/bin/sh
+mpc-url flush && mpc-url update

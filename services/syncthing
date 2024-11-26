@@ -1,0 +1,2 @@
+#!/data/data/com.termux/files/usr/bin/sh
+exec syncthing --no-browser --no-restart --logflags=0 --no-default-folder --gui-address=http://0.0.0.0:8384 2>&1
