@@ -69,9 +69,15 @@ sv-enable mpd
 sv up mpd
 
 # mpc-url
-pkg install -y jq iconv wget netcat-openbsd # dependencies
+pkg install -y jq iconv wget netcat-openbsd # mpc-url dependencies
 sv-enable mpc-url
 sv up mpc-url
+termux-job-scheduler \
+  --job-id=1 \
+  --network=any \
+  --period-ms=7200000 \
+  --persisted=true \
+  --script=$TERMUX/bin/mpc-url-refresh # every 2 hours
 
 # mpdscribble
 pkg install -y mpdscribble

@@ -39,6 +39,7 @@ export EDITOR=nvim
 export VISUAL=nvim
 alias vim=nvim
 alias vi=nvim
+alias cdt="cd ~/.termux"
 
 # tmux
 export TMUX_PLUGIN_MANAGER_PATH="$HOME/.local/share/tmux/plugins/"
