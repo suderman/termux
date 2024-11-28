@@ -1,4 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/bash
+termux-wake-lock
+
+# update packages
+pkg update
 
 # -- already exists --
 # PREFIX=/data/data/com.termux/files/usr
@@ -7,22 +11,30 @@
 export XDG_DATA_HOME="$HOME/.local/share"
 export XDG_CONFIG_HOME="$HOME/.termux/config"
 export TERMUX="$HOME/.termux"
-export PATH="$TERMUX/bin:$PATH"
+export PATH="$HOME/bin:$TERMUX/bin:$PATH"
 
 # Ensure these hidden directories are symlinked into ~/.termux/*
+symlink $TERMUX/bin $HOME/bin
 symlink $TERMUX/config $HOME/.config
 symlink $TERMUX/shortcuts $HOME/.shortcuts
 
 # termux tooling
 pkg install -y termux-api termux-tools termux-services git
 
-# Configure all custom termux-services
+# configure all custom termux-services
 for service in $TERMUX/services/*; do
   dir="$PREFIX/var/service/$(basename $service)"
   mkdir -p $dir
   ln -sf $PREFIX/share/termux-services/svlogger $dir/log/run
   cp -f $service $dir/run
 done
+
+# heartbeat every 15 minutes
+termux-job-scheduler \
+  --job-id=1 \
+  --persisted=true \
+  --period-ms 900000 \
+  --script=$TERMUX/jobs/1.sh
 
 # openssh
 pkg install -y openssh  
@@ -73,11 +85,10 @@ pkg install -y jq iconv wget netcat-openbsd # mpc-url dependencies
 sv-enable mpc-url
 sv up mpc-url
 termux-job-scheduler \
-  --job-id=1 \
-  --network=any \
-  --period-ms=7200000 \
+  --job-id=2 \
   --persisted=true \
-  --script=$TERMUX/bin/mpc-url-refresh # every 2 hours
+  --period-ms=7200000 \
+  --script=$TERMUX/jobs/2.sh # every 2 hours
 
 # mpdscribble
 pkg install -y mpdscribble
@@ -96,3 +107,9 @@ pkg install -y build-essential file curl fzf fd yazi rsync mpv python ffmpeg neo
 # > rish
 # > sh /sdcard/Android/permission.sh
 cp -f $TERMUX/permission.sh /sdcard/Android/permission.sh
+
+# upgrade packages
+pkg upgrade -y
+
+# done
+termux-wake-unlock
