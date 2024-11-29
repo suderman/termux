@@ -1,5 +1,28 @@
 # termux config
 
+## Usage
+
+| volume button | shortcut key  | command                   |
+| ------------- | ------------- | ------------------------- |
+| `up`          | `q`           | toggle extra keys         |
+| `up`          | `v`           | toggle volume control     |
+| `up`          | `e`           | `esc`                     |
+| `up`          | `t`           | `tab`                     |
+| `up`          | `1`..`0`      | function keys `f1`..`f10` |
+| `up`          | `wasd`        | arrow keys                |
+| `up`          | `f`           | `alt-f`                   |
+| `up`          | `b`           | `alt-b`                   |
+| `up`          | `x`           | `alt-x`                   |
+| `up`          | `l`           | pipe `|`                  |
+| `up`          | `h`           | tilde `~`                 |
+| `up`          | `u`           | underscore `_`            |
+| `up`          | `p`           | `pgup`                    |
+| `up`          | `n`           | `pgdn`                    |
+| `up`          | `.`           | `ctrl-\`                  |
+| `down`        | `any`         | `ctrl-any`                |
+
+## Installation
+
 Install the latest:
 - [termux](https://github.com/termux/termux-app/releases)
 - [termux-api](https://github.com/termux/termux-api/releases)
@@ -25,5 +48,3 @@ bash .
 rish
 sh /sdcard/Android/permission.sh
 ```
-
-
