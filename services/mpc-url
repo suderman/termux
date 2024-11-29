@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/sh
-export PATH=$HOME/.termux/bin:$PATH
+export PATH=$HOME/bin:$PATH
+
 mpc-url flush 
 mpc-url update
-exec mpc-url loop 2>&1
+mpc-url watch 2>&1

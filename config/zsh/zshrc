@@ -32,7 +32,7 @@ plugins=(git gitignore sudo rsync)
 source $ZSH/oh-my-zsh.sh
 
 # Path
-export PATH=$HOME/.termux/bin:$PATH
+export PATH=$HOME/bin:$HOME/.termux/bin:$PATH
 
 # Editor
 export EDITOR=nvim
