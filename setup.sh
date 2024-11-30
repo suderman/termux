@@ -19,7 +19,7 @@ symlink $TERMUX/config $HOME/.config
 symlink $TERMUX/shortcuts $HOME/.shortcuts
 
 # termux tooling
-pkg install -y termux-api termux-tools termux-services git
+pkg install -y git termux-tools termux-api termux-services
 
 # configure all custom termux-services
 for service in $TERMUX/services/*; do
@@ -70,7 +70,7 @@ git-clone-pull https://github.com/tmux-plugins/tpm $dir/tpm
 $dir/tpm/bin/install_plugins
 
 # yt-dlp
-pkg install -y python                                                                                      u0_a377@localhost
+pkg install -y python
 pip install yt-dlp  
 
 # mpd 

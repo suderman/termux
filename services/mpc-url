@@ -1,6 +1,16 @@
 #!/data/data/com.termux/files/usr/bin/sh
 export PATH=$HOME/bin:$PATH
 
-mpc-url flush 
+# Kill all zombies
+killall mpc-url
+
+# Ensure no lockfile
+dir="$HOME/.cache/mpc-url"
+mkdir -p $dir
+rm -f $dir/lock
+
+# Update playlist right now
 mpc-url update
+
+# Watch for playlist changes
 mpc-url watch 2>&1

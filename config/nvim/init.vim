@@ -104,7 +104,7 @@ Plug 'othree/yajs.vim'
 Plug 'othree/javascript-libraries-syntax.vim'
 Plug 'mxw/vim-jsx'
 if has('Python')
-  call minpac#add('valloric/MatchTagAlways'
+  call minpac#add('valloric/MatchTagAlways')
 endif
 
 " Initialize plugin system
@@ -127,6 +127,10 @@ set redrawtime=10000
 " Wrapped lines goes down/up to next row, rather than next line in file.
 noremap j gj
 noremap k gk
+
+" leader is space
+noremap <Space> <Nop> 
+map <Space> <Leader>
 
 " Remap ; to : in visual mode
 nnoremap ; :
@@ -275,10 +279,11 @@ set smartcase
 set gdefault
 
 " Clear search with comma-space
-noremap <leader><space> :noh<CR>:match none<CR>:2match none<CR>:3match none<CR>
+" noremap <leader><space> :noh<CR>:match none<CR>:2match none<CR>:3match none<CR>
+noremap <leader>c :noh<CR>:match none<CR>:2match none<CR>:3match none<CR>
 
 " fzf fuzzy finder
-set rtp+=/work/.local/share/fzf
+" set rtp+=/work/.local/share/fzf
 nnoremap <C-t> <ESC>:Files<CR>
 " nnoremap <M-k> <ESC>:Buffers<CR>
 nnoremap <M-t> <ESC>:Lines<CR>
