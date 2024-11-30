@@ -103,7 +103,7 @@ update() {
   # Only allow one instance of this function to run at a time
   if [[ -e "$dir/lock" ]]; then
     echo "locked"
-    return 1
+    return
   else
     touch $dir/lock
   fi
