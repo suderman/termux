@@ -81,7 +81,7 @@ sv-enable mpd
 sv up mpd
 
 # mpc-url
-pkg install -y jq iconv wget netcat-openbsd # mpc-url dependencies
+pkg install -y jq curl netcat-openbsd # mpc-url dependencies
 sv-enable mpc-url
 sv up mpc-url
 termux-job-scheduler \
@@ -101,7 +101,7 @@ sv-enable syncthing
 sv up syncthing
 
 # everything else
-pkg install -y build-essential file curl fzf fd yazi rsync mpv python ffmpeg neofetch imagemagick 
+pkg install -y build-essential file fzf fd yazi rsync mpv python ffmpeg neofetch imagemagick 
 
 # copy script to directory where rish can execute
 # > rish

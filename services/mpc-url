@@ -4,13 +4,5 @@ export PATH=$HOME/bin:$PATH
 # Kill all zombies
 killall mpc-url
 
-# Ensure no lockfile
-dir="$HOME/.cache/mpc-url"
-mkdir -p $dir
-rm -f $dir/lock
-
-# Update playlist right now
-mpc-url update
-
 # Watch for playlist changes
 mpc-url watch 2>&1
