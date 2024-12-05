@@ -1,3 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/bash
 export PATH="$HOME/bin:$PATH"
-mpc-url update
+termux-wake-lock
+mpd-url update
+termux-wake-unlock

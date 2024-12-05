@@ -80,10 +80,13 @@ mkdir -p $XDG_DATA_HOME/mpd
 sv-enable mpd
 sv up mpd
 
-# mpc-url
-pkg install -y jq curl netcat-openbsd # mpc-url dependencies
-sv-enable mpc-url
-sv up mpc-url
+# mpd-url
+pkg install -y jq curl netcat-openbsd # mpd-url dependencies
+git-clone-pull https://github.com/suderman/mpd-url $XDG_DATA_HOME/mpd-url
+cp -f $XDG_DATA_HOME/mpd-url/mpd-url $HOME/bin/mpd-url
+termux-fix-shebang $HOME/bin/mpd-url
+sv-enable mpd-url
+sv up mpd-url
 termux-job-scheduler \
   --job-id=2 \
   --persisted=true \

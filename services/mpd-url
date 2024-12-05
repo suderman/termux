@@ -2,7 +2,7 @@
 export PATH=$HOME/bin:$PATH
 
 # Kill all zombies
-killall mpc-url
+killall mpd-url
 
 # Watch for playlist changes
-mpc-url watch 2>&1
+mpd-url watch 2>&1

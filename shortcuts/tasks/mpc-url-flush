@@ -1,6 +1,0 @@
-#!/data/data/com.termux/files/usr/bin/bash
-export PATH="$HOME/bin:$PATH"
-termux-wake-lock
-mpc-url flush
-mpc-url update
-termux-wake-unlock
