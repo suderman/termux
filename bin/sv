@@ -1,0 +1,15 @@
+#!/data/data/com.termux/files/usr/bin/bash
+
+# Add log subcommand
+if [[ "${1-}" == "log" ]]; then
+
+  if [ -e "$PREFIX/var/log/sv/${2-none}/current" ]; then
+    tail -f $PREFIX/var/log/sv/$2/current 
+  else
+    echo "No logs found"
+  fi
+
+# Passthru everything else
+else
+  /data/data/com.termux/files/usr/bin/sv ${@-}
+fi

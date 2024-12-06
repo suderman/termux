@@ -1,0 +1,16 @@
+#!/data/data/com.termux/files/usr/bin/bash
+URL=$1
+termux-api-start
+FORMAT="$(termux-dialog radio -v '1) Video','2) Music','3) Custom' | jq '.index' -r)"
+case $FORMAT in
+        0) FORMAT="b/bv+ba";;
+        1) FORMAT="ba/b -x --audio-format mp3";;
+        *) yt-dlp -qF $URL && read -p "Video+Audio: " FORMAT;;
+esac
+OPTION="$(termux-dialog radio -v '1) Download','2) Share Download','3) Open Link','4) Share Link' | jq '.index' -r)"
+case $OPTION in
+        0) yt-dlp -f $FORMAT "$URL";;
+        1) termux-share -a send "$(yt-dlp -qf $FORMAT $URL --exec echo)";;
+        2) termux-open-url "$(yt-dlp -qf $FORMAT $URL -O urls --exec echo)";;
+        *) yt-dlp -qf $FORMAT "$URL" -O urls --exec echo | termux-share -a send;;
+esac

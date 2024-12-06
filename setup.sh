@@ -24,7 +24,7 @@ pkg install -y git termux-tools termux-api termux-services
 # configure all custom termux-services
 for service in $TERMUX/services/*; do
   dir="$PREFIX/var/service/$(basename $service)"
-  mkdir -p $dir
+  mkdir -p $dir/log
   ln -sf $PREFIX/share/termux-services/svlogger $dir/log/run
   cp -f $service $dir/run
 done
