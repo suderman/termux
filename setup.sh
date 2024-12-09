@@ -103,6 +103,13 @@ pkg install -y syncthing
 sv-enable syncthing
 sv up syncthing
 
+# Attempt to roll over daily-notes every 4 hours
+termux-job-scheduler \
+  --job-id=3 \
+  --persisted=true \
+  --period-ms=14400000 \
+  --script=$TERMUX/jobs/3.sh
+
 # everything else
 pkg install -y build-essential file fzf fd yazi rsync mpv python ffmpeg neofetch imagemagick 
 

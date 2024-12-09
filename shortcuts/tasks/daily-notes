@@ -1,0 +1,36 @@
+#!/data/data/com.termux/files/usr/bin/bash
+
+# Daily notes directory
+dir="/storage/emulated/0/Notes/Daily"
+mkdir -p $dir
+
+# Today and yesterday
+today="$(date +%Y-%m-%d)"
+yesterday="$(date -d "yesterday" +%Y-%m-%d)"
+
+# Ensure these files exist
+touch $dir/Today.md # Today's daily note
+touch $dir/.today # Current datestamp of "Today"
+
+# Check if it's the next day
+if [[ "$(cat $dir/.today)" != "$today" ]]; then
+
+  # Use a suffix if the filename for yesterday already exists
+  suffix=""
+  [[ -e "$dir/${yesterday}.md" ]] && suffix="-$(date +%Y%m%d%H%M%S)"
+
+  # Rename Today to yesterday's date
+  mv $dir/Today.md $dir/${yesterday}${suffix}.md
+
+  # Create a new Today file and record the date
+  touch $dir/Today.md
+  echo $today > $dir/.today
+fi
+
+# Delete empty notes (excluding today's)
+for note in $dir/*.md; do
+  if [[ ! -s $note && "$(basename $note)" != "Today.md" ]]; then
+    rm $note
+  fi
+done
+
