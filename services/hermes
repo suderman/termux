@@ -1,0 +1,2 @@
+#!/data/data/com.termux/files/usr/bin/sh
+exec /data/data/com.termux/files/home/.termux/bin/dot gateway run --replace  2>&1

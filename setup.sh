@@ -98,10 +98,18 @@ pkg install -y mpdscribble
 sv-enable mpdscribble
 sv up mpdscribble
 
-# syncthing
-pkg install -y syncthing
-sv-enable syncthing
-sv up syncthing
+# hermes-agent
+pkg install -y git python clang rust make pkg-config libffi openssl nodejs ripgrep ffmpeg
+# curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash 
+# if install gets stuck:
+# cd ~/.hermes/hermes-agent
+# python -m venv venv
+# source venv/bin/activate
+# export ANDROID_API_LEVEL="$(getprop ro.build.version.sdk)"
+# python -m pip install --upgrade pip setuptools wheel
+# python -m pip install -e '.[termux]' -c constraints-termux.txt
+sv-enable hermes
+sv up hermes
 
 # Attempt to roll over daily-notes every 4 hours
 termux-job-scheduler \

@@ -1,0 +1,3 @@
+#!/data/data/com.termux/files/usr/bin/bash
+export HERMES_HOME="/data/data/com.termux/files/home/.hermes"
+exec "/data/data/com.termux/files/home/.hermes/hermes-agent/venv/bin/hermes" "$@"
