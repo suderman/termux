@@ -108,8 +108,10 @@ pkg install -y git python clang rust make pkg-config libffi openssl nodejs ripgr
 # export ANDROID_API_LEVEL="$(getprop ro.build.version.sdk)"
 # python -m pip install --upgrade pip setuptools wheel
 # python -m pip install -e '.[termux]' -c constraints-termux.txt
-sv-enable hermes
-sv up hermes
+#
+# disabling hermes for now
+# sv-enable hermes
+# sv up hermes
 
 # Attempt to roll over daily-notes every 4 hours
 termux-job-scheduler \

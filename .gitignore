@@ -1,5 +1,7 @@
 /config/pulse
+/config/gh/hosts.yml
 /shell
 /font*
 /scratch
 /bin/mpd-url
+__pycache__
