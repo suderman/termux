@@ -1,4 +1,5 @@
 /config/pulse
+/config/emacs
 /config/gh/hosts.yml
 /shell
 /font*

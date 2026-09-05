@@ -61,6 +61,31 @@ Before relying on remote access, put the desired public key in
 `~/.ssh/authorized_keys`. SSH is configured for public-key authentication only.
 Zsh is the default interactive shell; scripts use their explicit shebangs.
 
+## Shared files
+
+`setup.sh` keeps these links consistent between Termux and the custom Emacs
+APK:
+
+```text
+Termux home                     Target
+~/storage                       /storage/emulated/0
+~/org                           /storage/emulated/0/Org
+~/emacs                         /data/data/org.gnu.emacs/files
+~/.config/emacs                 /data/data/org.gnu.emacs/files/.config/emacs
+
+Emacs app home                  Target
+~/storage                       /storage/emulated/0
+~/org                           /storage/emulated/0/Org
+~/termux                        /data/data/com.termux/files/home
+~/src                           /data/data/com.termux/files/home/src
+```
+
+Termux owns the real `~/src` directory. The Emacs APK owns its
+`~/.config/emacs` Git repository. Setup removes Termux's legacy `~/.emacs`,
+`~/.emacs.el`, `~/.emacs.elc`, and `~/.emacs.d` paths so terminal Emacs loads
+the APK-owned config through `~/.config/emacs`. If the Emacs app home is not
+installed or writable, setup warns and continues.
+
 One-time Android setup:
 
 1. Open Termux:Boot once so Android permits its boot receiver.

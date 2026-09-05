@@ -25,6 +25,31 @@ symlink "$TERMUX/bin" "$HOME/bin"
 symlink "$TERMUX/config" "$HOME/.config"
 symlink "$TERMUX/shortcuts" "$HOME/.shortcuts"
 
+# shared Termux and Emacs homes
+if [ -L "$HOME/src" ] || { [ -e "$HOME/src" ] && [ ! -d "$HOME/src" ]; }; then
+  echo "Expected a directory at $HOME/src" >&2
+  exit 1
+fi
+mkdir -p "$HOME/src"
+
+symlink /storage/emulated/0 "$HOME/storage"
+symlink /storage/emulated/0/Org "$HOME/org"
+
+# Force terminal Emacs to use the Android Emacs app's config.
+rm -rf -- "$HOME/.emacs" "$HOME/.emacs.el" "$HOME/.emacs.elc" "$HOME/.emacs.d"
+
+emacs_home=/data/data/org.gnu.emacs/files
+if [ -d "$emacs_home" ] && [ -w "$emacs_home" ]; then
+  symlink "$emacs_home" "$HOME/emacs"
+  symlink "$emacs_home/.config/emacs" "$HOME/.config/emacs"
+  symlink /storage/emulated/0 "$emacs_home/storage"
+  symlink /storage/emulated/0/Org "$emacs_home/org"
+  symlink "$HOME" "$emacs_home/termux"
+  symlink "$HOME/src" "$emacs_home/src"
+else
+  echo "Warning: Emacs app home is unavailable: $emacs_home" >&2
+fi
+
 # termux tooling
 pkg install -y gh git termux-tools termux-api termux-services
 

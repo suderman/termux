@@ -6,7 +6,9 @@
 - Use Termux shebangs under `/data/data/com.termux/files/usr/bin/`. Quote paths and keep Bash-only syntax in scripts using the Bash shebang.
 - Run `bash -n` on changed scripts and `git diff --check` before deployment. ShellCheck is not currently installed.
 - Markdown daily-note creation is retired. Do not restore job 3 or delete the user's existing notes.
-- Android and Termux Emacs configurations are intentionally separate for now.
+- The Emacs APK owns `/data/data/org.gnu.emacs/files/.config/emacs`; do not modify that repository while maintaining this one.
+- Termux Emacs uses the APK-owned config through `~/.config/emacs`. Keep legacy `~/.emacs*` and `~/.emacs.d` paths removed because Emacs prefers them over the XDG config.
+- Termux owns the real `~/src` directory. The Emacs app links its `~/src` back to that directory.
 
 ## Services
 
