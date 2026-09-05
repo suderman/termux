@@ -9,11 +9,12 @@ target=$1
 destination=$2
 
 # Ensure destination's parent directory exists
-mkdir -p $(dirname $destination)
+mkdir -p -- "$(dirname -- "$destination")"
 
-# Always destroy destination before creating symbolic link
-# to ensure we're not placing it inside an existing directory
-rm -rf $destination
+if [ -e "$destination" ] && [ ! -L "$destination" ]; then
+  echo "Refusing to replace non-symlink: $destination" >&2
+  exit 1
+fi
 
-# Create the symbolic link
-ln -s $target $destination
+rm -f -- "$destination"
+ln -s -- "$target" "$destination"

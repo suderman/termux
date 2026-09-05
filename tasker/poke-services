@@ -1,6 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/sh
 
 export PATH="$PREFIX/bin:$HOME/bin:$PATH"
+export SVDIR="$PREFIX/var/service"
 
 # Make sure termux-services has started runsvdir.
 if [ -f "$PREFIX/etc/profile.d/start-services.sh" ]; then
@@ -8,6 +9,6 @@ if [ -f "$PREFIX/etc/profile.d/start-services.sh" ]; then
 fi
 
 # Gentle nudges. These should be harmless if already running.
-sv up syncthing 2>/dev/null || true
-sv up mpd 2>/dev/null || true
+sv-enable sshd 2>/dev/null || true
+sv up syncthing mpd 2>/dev/null || true
 # sv up hermes 2>/dev/null || true

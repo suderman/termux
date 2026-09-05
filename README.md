@@ -23,7 +23,9 @@
 
 ## Installation
 
-Install the latest:
+Install the latest GitHub releases. Termux and every Termux add-on must come
+from the same source so their signatures match.
+
 - [termux](https://github.com/termux/termux-app/releases)
 - [termux-api](https://github.com/termux/termux-api/releases)
 - [termux-boot](https://github.com/termux/termux-boot/releases)
@@ -35,16 +37,45 @@ Install the latest:
 - [shizuku](https://github.com/RikkaApps/Shizuku/releases)
 
 ```sh
-pkg update
-pkg upgrade
-pkg install git
-rm -rf ~/.termux
+pkg update && pkg upgrade -y
+pkg install -y git
 git clone https://github.com/suderman/termux ~/.termux
-bash .
 ~/.termux/setup.sh
 ```
+
+Before relying on remote access, put the desired public key in
+`~/.ssh/authorized_keys`. SSH is configured for public-key authentication only.
+
+One-time Android setup:
+
+1. Open Termux:Boot once so Android permits its boot receiver.
+2. Set Termux battery usage to Unrestricted and allow its notifications.
+3. Keep the permanent wake lock disabled. Boot and scheduled jobs take short locks while repairing services.
+4. Start Shizuku before applying the optional Android settings below.
 
 ```sh
 rish
 sh /sdcard/Android/permission.sh
+```
+
+## Services
+
+`sshd`, `mpd`, `mpd-url`, and `syncthing` run under `termux-services`.
+`crond`, `mpdscribble`, and `hermes` are intentionally disabled.
+
+```sh
+sv status "$PREFIX/var/service/sshd"
+sv log sshd
+```
+
+OpenSSH package upgrades recreate its `down` marker. The boot script, the
+15-minute job, and the Tasker poke all run `sv-enable sshd` to repair it. A
+healthy status must not include `normally down`.
+
+If SSH is unavailable, open Termux locally and run:
+
+```sh
+export SVDIR="$PREFIX/var/service"
+. "$PREFIX/etc/profile.d/start-services.sh"
+sv-enable sshd
 ```

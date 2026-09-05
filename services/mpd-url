@@ -1,8 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/sh
-export PATH=$HOME/bin:$PATH
-
-# Kill all zombies
-killall mpd-url
+export PATH="$HOME/bin:$PATH"
 
 # Watch for playlist changes
-mpd-url watch 2>&1
+exec mpd-url watch 2>&1

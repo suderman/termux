@@ -1,8 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/bash
+set -euo pipefail
+
 termux-wake-lock
+trap termux-wake-unlock EXIT
 
 # update packages
-pkg update
+pkg update -y
+pkg upgrade -y
 
 # -- already exists --
 # PREFIX=/data/data/com.termux/files/usr
@@ -14,92 +18,76 @@ export TERMUX="$HOME/.termux"
 export PATH="$HOME/bin:$TERMUX/bin:$PATH"
 
 # Ensure these hidden directories are symlinked into ~/.termux/*
-symlink $TERMUX/bin $HOME/bin
-symlink $TERMUX/config $HOME/.config
-symlink $TERMUX/shortcuts $HOME/.shortcuts
+symlink "$TERMUX/bin" "$HOME/bin"
+symlink "$TERMUX/config" "$HOME/.config"
+symlink "$TERMUX/shortcuts" "$HOME/.shortcuts"
 
 # termux tooling
-pkg install -y git termux-tools termux-api termux-services
-
-# configure all custom termux-services
-for service in $TERMUX/services/*; do
-  dir="$PREFIX/var/service/$(basename $service)"
-  mkdir -p $dir/log
-  ln -sf $PREFIX/share/termux-services/svlogger $dir/log/run
-  cp -f $service $dir/run
-done
+pkg install -y gh git termux-tools termux-api termux-services
+export SVDIR="$PREFIX/var/service"
+export LOGDIR="$PREFIX/var/log"
 
 # heartbeat every 15 minutes
 termux-job-scheduler \
   --job-id=1 \
   --persisted=true \
   --period-ms 900000 \
-  --script=$TERMUX/jobs/1.sh
+  --script="$TERMUX/jobs/1.sh"
 
 # openssh
-pkg install -y openssh  
-sv-enable sshd
-sv up sshd
-
-# crond
-pkg install -y cronie 
-sv-enable crond
-sv up crond
+pkg install -y openssh
+mkdir -p "$PREFIX/etc/ssh/sshd_config.d"
+ln -sf "$XDG_CONFIG_HOME/ssh/sshd_config.d/termux.conf" \
+  "$PREFIX/etc/ssh/sshd_config.d/termux.conf"
 
 # bash
 pkg install -y bash
-symlink $XDG_CONFIG_HOME/bash/bashrc $HOME/.bashrc
+symlink "$XDG_CONFIG_HOME/bash/bashrc" "$HOME/.bashrc"
 
 # zsh + oh-my-zsh
 pkg install -y zsh
-symlink $XDG_CONFIG_HOME/zsh/zshrc $HOME/.zshrc
-git-clone-pull https://github.com/ohmyzsh/ohmyzsh $XDG_DATA_HOME/oh-my-zsh
+symlink "$XDG_CONFIG_HOME/zsh/zshrc" "$HOME/.zshrc"
+git-clone-pull https://github.com/ohmyzsh/ohmyzsh "$XDG_DATA_HOME/oh-my-zsh"
 
 # nvim
 pkg install -y neovim
 dir="$XDG_DATA_HOME/nvim/site"
-mkdir -p $dir/{autoload,plugged} # install vim-plug 
-curl -fL https://github.com/junegunn/vim-plug/raw/master/plug.vim > $dir/autoload/plug.vim
+mkdir -p "$dir"/{autoload,plugged} # install vim-plug
+curl -fL https://github.com/junegunn/vim-plug/raw/master/plug.vim \
+  --output "$dir/autoload/plug.vim"
 nvim +PlugInstall +qall
 
 # tmux
 pkg install -y tmux
 dir="$XDG_DATA_HOME/tmux/plugins"
-mkdir -p $dir # install tmux plugin manager
-git-clone-pull https://github.com/tmux-plugins/tpm $dir/tpm
-$dir/tpm/bin/install_plugins
+mkdir -p "$dir" # install tmux plugin manager
+git-clone-pull https://github.com/tmux-plugins/tpm "$dir/tpm"
+"$dir/tpm/bin/install_plugins"
 
 # yt-dlp
 pkg install -y python
-pip install yt-dlp  
+python -m pip install --upgrade yt-dlp
 
 # mpd 
-symlink $XDG_CONFIG_HOME/mpd $HOME/.mpd
+symlink "$XDG_CONFIG_HOME/mpd" "$HOME/.mpd"
 pkg install -y mpd mpc
-mkdir -p $XDG_DATA_HOME/mpd
-sv-enable mpd
-sv up mpd
+mkdir -p "$XDG_DATA_HOME/mpd/playlists"
 
 # mpd-url
 pkg install -y jq curl netcat-openbsd # mpd-url dependencies
-git-clone-pull https://github.com/suderman/mpd-url $XDG_DATA_HOME/mpd-url
-cp -f $XDG_DATA_HOME/mpd-url/mpd-url $HOME/bin/mpd-url
-termux-fix-shebang $HOME/bin/mpd-url
-sv-enable mpd-url
-sv up mpd-url
+git-clone-pull https://github.com/suderman/mpd-url "$XDG_DATA_HOME/mpd-url"
+cp -f "$XDG_DATA_HOME/mpd-url/mpd-url" "$HOME/bin/mpd-url"
+termux-fix-shebang "$HOME/bin/mpd-url"
 termux-job-scheduler \
   --job-id=2 \
   --persisted=true \
   --period-ms=7200000 \
-  --script=$TERMUX/jobs/2.sh # every 2 hours
+  --script="$TERMUX/jobs/2.sh" # every 2 hours
 
-# mpdscribble
-pkg install -y mpdscribble
-sv-enable mpdscribble
-sv up mpdscribble
+# syncthing
+pkg install -y syncthing
 
 # hermes-agent
-pkg install -y git python clang rust make pkg-config libffi openssl nodejs ripgrep ffmpeg
 # curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash 
 # if install gets stuck:
 # cd ~/.hermes/hermes-agent
@@ -110,26 +98,41 @@ pkg install -y git python clang rust make pkg-config libffi openssl nodejs ripgr
 # python -m pip install -e '.[termux]' -c constraints-termux.txt
 #
 # disabling hermes for now
-# sv-enable hermes
-# sv up hermes
+
+# everything else
+pkg install -y build-essential file fzf fd yazi rsync mpv ffmpeg neofetch imagemagick
+
+# configure custom termux-services after their dependencies are installed
+for service in "$TERMUX"/services/*; do
+  name="$(basename "$service")"
+  dir="$SVDIR/$name"
+  mkdir -p "$dir/log"
+  ln -sf "$PREFIX/share/termux-services/svlogger" "$dir/log/run"
+  cp -f "$service" "$dir/run"
+done
+
+# Package upgrades restore sshd's down marker, so enable services last.
+touch "$SVDIR/hermes/down"
+. "$PREFIX/etc/profile.d/start-services.sh"
+sv-enable sshd
+sv-enable mpd
+sv-enable mpd-url
+sv-enable syncthing
+
+for service in crond mpdscribble hermes; do
+  if [ -d "$SVDIR/$service" ]; then
+    sv-disable "$service"
+  fi
+done
 
 # Attempt to roll over daily-notes every 4 hours
 termux-job-scheduler \
   --job-id=3 \
   --persisted=true \
   --period-ms=14400000 \
-  --script=$TERMUX/jobs/3.sh
-
-# everything else
-pkg install -y build-essential file fzf fd yazi rsync mpv python ffmpeg neofetch imagemagick 
+  --script="$TERMUX/jobs/3.sh"
 
 # copy script to directory where rish can execute
 # > rish
 # > sh /sdcard/Android/permission.sh
-cp -f $TERMUX/permission.sh /sdcard/Android/permission.sh
-
-# upgrade packages
-pkg upgrade -y
-
-# done
-termux-wake-unlock
+cp -f "$TERMUX/permission.sh" /sdcard/Android/permission.sh

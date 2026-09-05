@@ -1,15 +1,17 @@
 #!/data/data/com.termux/files/usr/bin/bash
 
+export SVDIR="${SVDIR:-$PREFIX/var/service}"
+
 # Add log subcommand
 if [[ "${1-}" == "log" ]]; then
-
-  if [ -e "$PREFIX/var/log/sv/${2-none}/current" ]; then
-    tail -f $PREFIX/var/log/sv/$2/current 
+  log="$PREFIX/var/log/sv/${2-none}/current"
+  if [ -f "$log" ]; then
+    exec tail -f -- "$log"
   else
     echo "No logs found"
+    exit 1
   fi
-
 # Passthru everything else
 else
-  /data/data/com.termux/files/usr/bin/sv ${@-}
+  exec /data/data/com.termux/files/usr/bin/sv "$@"
 fi
