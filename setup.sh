@@ -28,12 +28,13 @@ symlink "$TERMUX/shortcuts" "$HOME/.shortcuts"
 # termux tooling
 pkg install -y gh git termux-tools termux-api termux-services
 
-# heartbeat every 15 minutes
+# Heartbeat every 15 minutes. Termux:API 0.53 crashes while formatting jobs
+# with no network constraint, so use "any" until the app fixes that bug.
 termux-job-scheduler \
   --job-id=1 \
   --persisted=true \
   --period-ms 900000 \
-  --network=none \
+  --network=any \
   --battery-not-low=false \
   --script="$TERMUX/jobs/1.sh"
 
@@ -131,9 +132,6 @@ for service in crond mpdscribble hermes; do
     sv-disable "$service"
   fi
 done
-
-# Remove the retired Markdown daily-note job from existing installs.
-termux-job-scheduler --cancel --job-id=3 2>/dev/null || true
 
 termux-reload-settings
 
