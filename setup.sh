@@ -51,7 +51,7 @@ symlink "$XDG_CONFIG_HOME/bash/bashrc" "$HOME/.bashrc"
 pkg install -y zsh
 symlink "$XDG_CONFIG_HOME/zsh/zshrc" "$HOME/.zshrc"
 git-clone-pull https://github.com/ohmyzsh/ohmyzsh "$XDG_DATA_HOME/oh-my-zsh"
-zsh -lic exit
+zsh -n "$HOME/.zshrc"
 chsh -s zsh
 
 # nvim
