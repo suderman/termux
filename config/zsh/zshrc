@@ -29,10 +29,10 @@ ZSH_DISABLE_COMPFIX="true"
 plugins=(git gitignore sudo rsync)
 
 # Load Oh my ZSH!
-source $ZSH/oh-my-zsh.sh
+source "$ZSH/oh-my-zsh.sh"
 
 # Path
-export PATH=$HOME/bin:$HOME/.termux/bin:$PATH
+export PATH="$HOME/bin:$HOME/.termux/bin:$PATH"
 
 # Editor
 export EDITOR=nvim
@@ -45,8 +45,8 @@ alias cdt="cd ~/.termux"
 export TMUX_PLUGIN_MANAGER_PATH="$HOME/.local/share/tmux/plugins/"
 
 # Customize FZF
-source $HOME/.config/zsh/fzf.sh
+source "$HOME/.config/zsh/fzf.sh"
 
 # Misc
 autoload -Uz bashcompinit && bashcompinit
-alias server="python -m SimpleHTTPServer"
+alias server="python -m http.server"

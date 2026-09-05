@@ -43,8 +43,23 @@ git clone https://github.com/suderman/termux ~/.termux
 ~/.termux/setup.sh
 ```
 
+`setup.sh` is safe to rerun. For routine maintenance, `termux-update` first
+rebases this repository onto its upstream branch, then updates packages,
+plugins, service configuration, and scheduled jobs. Commit or stash phone-side
+changes before running it.
+
+Phone-side changes can be committed and pushed normally:
+
+```sh
+git -C ~/.termux add -A
+git -C ~/.termux commit
+git -C ~/.termux pull --rebase
+git -C ~/.termux push
+```
+
 Before relying on remote access, put the desired public key in
 `~/.ssh/authorized_keys`. SSH is configured for public-key authentication only.
+Zsh is the default interactive shell; scripts use their explicit shebangs.
 
 One-time Android setup:
 

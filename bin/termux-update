@@ -1,0 +1,18 @@
+#!/data/data/com.termux/files/usr/bin/bash
+set -euo pipefail
+
+repo="${TERMUX:-$HOME/.termux}"
+
+if [ ! -d "$repo/.git" ]; then
+  echo "Not a Git repository: $repo" >&2
+  exit 1
+fi
+
+status="$(git -C "$repo" status --porcelain)"
+if [ -n "$status" ]; then
+  echo "Commit or stash changes in $repo before updating." >&2
+  exit 1
+fi
+
+git -C "$repo" pull --rebase
+exec "$repo/setup.sh"

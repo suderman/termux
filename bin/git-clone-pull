@@ -10,7 +10,7 @@ directory=$2
 
 if [ -d "$directory/.git" ]; then
   echo "Updating $repository"
-  git -C "$directory" pull
+  git -C "$directory" pull --ff-only
   exit
 fi
 

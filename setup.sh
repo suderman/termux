@@ -4,18 +4,21 @@ set -euo pipefail
 termux-wake-lock
 trap termux-wake-unlock EXIT
 
-# update packages
-pkg update -y
-pkg upgrade -y
-
-# -- already exists --
-# PREFIX=/data/data/com.termux/files/usr
-# HOME=/data/data/com.termux/files/home
-# -- add these too -- 
 export XDG_DATA_HOME="$HOME/.local/share"
 export XDG_CONFIG_HOME="$HOME/.termux/config"
 export TERMUX="$HOME/.termux"
 export PATH="$HOME/bin:$TERMUX/bin:$PATH"
+export SVDIR="$PREFIX/var/service"
+export LOGDIR="$PREFIX/var/log"
+
+# update packages
+pkg update -y
+pkg upgrade -y
+
+# OpenSSH upgrades recreate this marker. Repair it before slower setup steps.
+if command -v sv-enable >/dev/null && [ -d "$SVDIR/sshd" ]; then
+  sv-enable sshd
+fi
 
 # Ensure these hidden directories are symlinked into ~/.termux/*
 symlink "$TERMUX/bin" "$HOME/bin"
@@ -24,14 +27,14 @@ symlink "$TERMUX/shortcuts" "$HOME/.shortcuts"
 
 # termux tooling
 pkg install -y gh git termux-tools termux-api termux-services
-export SVDIR="$PREFIX/var/service"
-export LOGDIR="$PREFIX/var/log"
 
 # heartbeat every 15 minutes
 termux-job-scheduler \
   --job-id=1 \
   --persisted=true \
   --period-ms 900000 \
+  --network=none \
+  --battery-not-low=false \
   --script="$TERMUX/jobs/1.sh"
 
 # openssh
@@ -48,6 +51,8 @@ symlink "$XDG_CONFIG_HOME/bash/bashrc" "$HOME/.bashrc"
 pkg install -y zsh
 symlink "$XDG_CONFIG_HOME/zsh/zshrc" "$HOME/.zshrc"
 git-clone-pull https://github.com/ohmyzsh/ohmyzsh "$XDG_DATA_HOME/oh-my-zsh"
+zsh -lic exit
+chsh -s zsh
 
 # nvim
 pkg install -y neovim
@@ -55,7 +60,7 @@ dir="$XDG_DATA_HOME/nvim/site"
 mkdir -p "$dir"/{autoload,plugged} # install vim-plug
 curl -fL https://github.com/junegunn/vim-plug/raw/master/plug.vim \
   --output "$dir/autoload/plug.vim"
-nvim +PlugInstall +qall
+nvim --headless '+PlugUpgrade' '+PlugUpdate --sync' '+qall'
 
 # tmux
 pkg install -y tmux
@@ -63,6 +68,7 @@ dir="$XDG_DATA_HOME/tmux/plugins"
 mkdir -p "$dir" # install tmux plugin manager
 git-clone-pull https://github.com/tmux-plugins/tpm "$dir/tpm"
 "$dir/tpm/bin/install_plugins"
+"$dir/tpm/bin/update_plugins" all
 
 # yt-dlp
 pkg install -y python
@@ -82,6 +88,7 @@ termux-job-scheduler \
   --job-id=2 \
   --persisted=true \
   --period-ms=7200000 \
+  --network=any \
   --script="$TERMUX/jobs/2.sh" # every 2 hours
 
 # syncthing
@@ -125,12 +132,22 @@ for service in crond mpdscribble hermes; do
   fi
 done
 
-# Attempt to roll over daily-notes every 4 hours
-termux-job-scheduler \
-  --job-id=3 \
-  --persisted=true \
-  --period-ms=14400000 \
-  --script="$TERMUX/jobs/3.sh"
+# Remove the retired Markdown daily-note job from existing installs.
+termux-job-scheduler --cancel --job-id=3 2>/dev/null || true
+
+termux-reload-settings
+
+if tmux list-sessions >/dev/null 2>&1; then
+  tmux source-file "$XDG_CONFIG_HOME/tmux/tmux.conf"
+fi
+
+sshd -t
+for service in sshd mpd mpd-url syncthing crond mpdscribble hermes; do
+  if [ -d "$SVDIR/$service" ]; then
+    sv status "$service"
+  fi
+done
+git -C "$TERMUX" status --short --branch
 
 # copy script to directory where rish can execute
 # > rish
