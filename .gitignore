@@ -6,3 +6,10 @@
 /scratch
 /bin/mpd-url
 __pycache__
+
+# Android-control captures and Nix local state
+android-control/
+*.android-control.png
+*.android-control.xml
+result
+.direnv/
