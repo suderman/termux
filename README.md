@@ -152,6 +152,20 @@ git -C ~/.termux push
 
 Zsh is the default interactive shell; scripts use their explicit shebangs.
 
+## Terminal font
+
+Run `install-termux-font` in Termux to install the pinned official
+`CommitMono Nerd Font Mono` release at `~/.termux/font.ttf`. The helper verifies
+both the Nerd Fonts archive and selected regular face, preserves the prior font
+as `~/.termux/font.ttf.before-commit-mono`, and reloads Termux settings.
+
+Restore the previous font with:
+
+```sh
+mv ~/.termux/font.ttf.before-commit-mono ~/.termux/font.ttf
+termux-reload-settings
+```
+
 ## Shared files
 
 `setup.sh` keeps these links consistent between Termux and the custom Emacs

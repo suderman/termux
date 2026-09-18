@@ -1,0 +1,32 @@
+#!/data/data/com.termux/files/usr/bin/bash
+set -euo pipefail
+
+version=3.5.1
+archive_sha256=7ee1e16909f0fd05cee30db4299753c33a6134c418c828d6d8523d246ee3f836
+font_sha256=24776d3423687cb3c18e5872f44678c9c2d0fe9564e50ee393931b80d7663fa5
+font_name=CommitMonoNerdFontMono-Regular.otf
+url="https://github.com/ryanoasis/nerd-fonts/releases/download/v${version}/CommitMono.tar.xz"
+destination="$HOME/.termux/font.ttf"
+backup="$HOME/.termux/font.ttf.before-commit-mono"
+work="$(mktemp -d "${TMPDIR:-${PREFIX:-/tmp}/tmp}/termux-font.XXXXXX")"
+trap 'rm -rf -- "$work"' EXIT
+
+if [[ -f $destination ]] && [[ $(sha256sum "$destination" | cut -d ' ' -f 1) == "$font_sha256" ]]; then
+  termux-reload-settings
+  printf 'CommitMono Nerd Font Mono %s is already installed.\n' "$version"
+  exit 0
+fi
+
+archive="$work/CommitMono.tar.xz"
+curl --fail --location --silent --show-error --output "$archive" "$url"
+printf '%s  %s\n' "$archive_sha256" "$archive" | sha256sum --check --status
+tar -xJf "$archive" -C "$work" "$font_name"
+printf '%s  %s\n' "$font_sha256" "$work/$font_name" | sha256sum --check --status
+
+if [[ -f $destination && ! -e $backup ]]; then
+  cp -p -- "$destination" "$backup"
+fi
+install -m 600 "$work/$font_name" "$destination.new"
+mv -f -- "$destination.new" "$destination"
+termux-reload-settings
+printf 'Installed CommitMono Nerd Font Mono %s at %s.\n' "$version" "$destination"
