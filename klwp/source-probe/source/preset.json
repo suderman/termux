@@ -1,0 +1,77 @@
+{
+  "preset_info": {
+    "archive": "",
+    "author": "",
+    "description": "Source round two: formula reads agenda global populated by scoped-storage flow",
+    "email": "",
+    "features": "",
+    "pflags": 0,
+    "hash": null,
+    "height": 1205,
+    "id": "255c8597-218f-48d7-868b-e90d24e0b369",
+    "locked": false,
+    "release": 382621115,
+    "ts": 1789681551462,
+    "title": "KLWP Source Probe Round 2",
+    "version": 17,
+    "width": 540,
+    "xscreens": 4,
+    "yscreens": 0
+  },
+  "preset_root": {
+    "internal_type": "RootLayerModule",
+    "globals_list": {
+      "agenda": {
+        "index": 1,
+        "type": "TEXT",
+        "title": "agenda",
+        "value": "GEM JSON ONE"
+      }
+    },
+    "internal_flows": [
+      {
+        "id": "FxXqbxNN",
+        "name": "Flow000",
+        "t": [
+          {
+            "id": "TTav7eAS",
+            "type": "T_ONCE"
+          }
+        ],
+        "a": [
+          {
+            "id": "TArC3ebX",
+            "type": "A_DOCUMENT",
+            "params": {
+              "output": "NEWEST",
+              "folder": "content://com.android.externalstorage.documents/tree/primary%3AKustom%2Fdata",
+              "name_filter": "klwp-probe.json",
+              "type": "FILE",
+              "name_filter_type": "CONTAINS"
+            }
+          },
+          {
+            "id": "TAel5Ibd",
+            "type": "A_FORMULA",
+            "params": {
+              "formula": "$wg(#last,json,.probe)$"
+            }
+          },
+          {
+            "id": "TAV9zsmm",
+            "type": "A_GLOBAL",
+            "params": {
+              "global": "agenda"
+            }
+          }
+        ]
+      }
+    ],
+    "viewgroup_items": [
+      {
+        "internal_type": "TextModule",
+        "text_expression": "$\"SOURCE FORMULA: \" + gv(agenda)$"
+      }
+    ]
+  }
+}

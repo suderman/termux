@@ -1,0 +1,971 @@
+{
+  "preset_info": {
+    "archive": "",
+    "author": "",
+    "description": "Agenda-first home wallpaper under KISS, with real Org data",
+    "email": "",
+    "features": "",
+    "pflags": 0,
+    "hash": null,
+    "height": 1205,
+    "id": "7fdbca50-5e52-480c-9363-56cecb9b95ad",
+    "locked": false,
+    "release": 382621115,
+    "ts": 1789832594117,
+    "title": "Gem Dashboard V8",
+    "version": 17,
+    "width": 540,
+    "xscreens": 4,
+    "yscreens": 0
+  },
+  "preset_root": {
+    "internal_type": "RootLayerModule",
+    "globals_list": {
+      "ink": {
+        "index": 1,
+        "type": "COLOR",
+        "title": "ink",
+        "value": "#FFE9EDF4"
+      },
+      "muted": {
+        "index": 2,
+        "type": "COLOR",
+        "title": "muted",
+        "value": "#FF98A7BA"
+      },
+      "blue": {
+        "index": 3,
+        "type": "COLOR",
+        "title": "blue",
+        "value": "#FFC4D3F5"
+      },
+      "pink": {
+        "index": 4,
+        "type": "COLOR",
+        "title": "pink",
+        "value": "#FFF3A6B6"
+      },
+      "green": {
+        "index": 5,
+        "type": "COLOR",
+        "title": "green",
+        "value": "#FFA9D5BB"
+      },
+      "yellow": {
+        "index": 6,
+        "type": "COLOR",
+        "title": "yellow",
+        "value": "#FFF1C884"
+      },
+      "title": {
+        "index": 7,
+        "type": "TEXT",
+        "title": "title",
+        "value": "Agenda unavailable"
+      },
+      "overdue": {
+        "index": 8,
+        "type": "TEXT",
+        "title": "overdue",
+        "value": "–"
+      },
+      "today": {
+        "index": 9,
+        "type": "TEXT",
+        "title": "today",
+        "value": "–"
+      },
+      "next14": {
+        "index": 10,
+        "type": "TEXT",
+        "title": "next14",
+        "value": "–"
+      },
+      "generated": {
+        "index": 11,
+        "type": "TEXT",
+        "title": "generated",
+        "value": ""
+      },
+      "when": {
+        "index": 12,
+        "type": "TEXT",
+        "title": "when",
+        "value": ""
+      },
+      "ntime": {
+        "index": 13,
+        "type": "TEXT",
+        "title": "ntime",
+        "value": ""
+      }
+    },
+    "internal_flows": [
+      {
+        "id": "AgendaV401",
+        "name": "Agenda title",
+        "t": [
+          {
+            "id": "TriggerV4011",
+            "type": "T_ONCE"
+          },
+          {
+            "id": "TriggerV4012",
+            "type": "T_CRON",
+            "params": {
+              "cron_string": "*/15 * * * *"
+            }
+          }
+        ],
+        "a": [
+          {
+            "id": "ActionV4011",
+            "type": "A_DOCUMENT",
+            "params": {
+              "output": "NEWEST",
+              "folder": "content://com.android.externalstorage.documents/tree/primary%3AKustom%2Fdata%2Forg-agenda",
+              "name_filter": "snapshot.json",
+              "type": "FILE",
+              "name_filter_type": "CONTAINS"
+            }
+          },
+          {
+            "id": "ActionV4012",
+            "type": "A_FORMULA",
+            "params": {
+              "formula": "$wg(#last + \"?k=\" + df(yyyyMMddHHmm),json,.next.title)$"
+            }
+          },
+          {
+            "id": "ActionV4013",
+            "type": "A_GLOBAL",
+            "params": {
+              "global": "title"
+            }
+          }
+        ]
+      },
+      {
+        "id": "AgendaV402",
+        "name": "Agenda overdue",
+        "t": [
+          {
+            "id": "TriggerV4021",
+            "type": "T_ONCE"
+          },
+          {
+            "id": "TriggerV4022",
+            "type": "T_CRON",
+            "params": {
+              "cron_string": "*/15 * * * *"
+            }
+          }
+        ],
+        "a": [
+          {
+            "id": "ActionV4021",
+            "type": "A_DOCUMENT",
+            "params": {
+              "output": "NEWEST",
+              "folder": "content://com.android.externalstorage.documents/tree/primary%3AKustom%2Fdata%2Forg-agenda",
+              "name_filter": "snapshot.json",
+              "type": "FILE",
+              "name_filter_type": "CONTAINS"
+            }
+          },
+          {
+            "id": "ActionV4022",
+            "type": "A_FORMULA",
+            "params": {
+              "formula": "$wg(#last + \"?k=\" + df(yyyyMMddHHmm),json,.counts.overdue)$"
+            }
+          },
+          {
+            "id": "ActionV4023",
+            "type": "A_GLOBAL",
+            "params": {
+              "global": "overdue"
+            }
+          }
+        ]
+      },
+      {
+        "id": "AgendaV403",
+        "name": "Agenda today",
+        "t": [
+          {
+            "id": "TriggerV4031",
+            "type": "T_ONCE"
+          },
+          {
+            "id": "TriggerV4032",
+            "type": "T_CRON",
+            "params": {
+              "cron_string": "*/15 * * * *"
+            }
+          }
+        ],
+        "a": [
+          {
+            "id": "ActionV4031",
+            "type": "A_DOCUMENT",
+            "params": {
+              "output": "NEWEST",
+              "folder": "content://com.android.externalstorage.documents/tree/primary%3AKustom%2Fdata%2Forg-agenda",
+              "name_filter": "snapshot.json",
+              "type": "FILE",
+              "name_filter_type": "CONTAINS"
+            }
+          },
+          {
+            "id": "ActionV4032",
+            "type": "A_FORMULA",
+            "params": {
+              "formula": "$wg(#last + \"?k=\" + df(yyyyMMddHHmm),json,.counts.today)$"
+            }
+          },
+          {
+            "id": "ActionV4033",
+            "type": "A_GLOBAL",
+            "params": {
+              "global": "today"
+            }
+          }
+        ]
+      },
+      {
+        "id": "AgendaV404",
+        "name": "Agenda next14",
+        "t": [
+          {
+            "id": "TriggerV4041",
+            "type": "T_ONCE"
+          },
+          {
+            "id": "TriggerV4042",
+            "type": "T_CRON",
+            "params": {
+              "cron_string": "*/15 * * * *"
+            }
+          }
+        ],
+        "a": [
+          {
+            "id": "ActionV4041",
+            "type": "A_DOCUMENT",
+            "params": {
+              "output": "NEWEST",
+              "folder": "content://com.android.externalstorage.documents/tree/primary%3AKustom%2Fdata%2Forg-agenda",
+              "name_filter": "snapshot.json",
+              "type": "FILE",
+              "name_filter_type": "CONTAINS"
+            }
+          },
+          {
+            "id": "ActionV4042",
+            "type": "A_FORMULA",
+            "params": {
+              "formula": "$wg(#last + \"?k=\" + df(yyyyMMddHHmm),json,.counts.next14)$"
+            }
+          },
+          {
+            "id": "ActionV4043",
+            "type": "A_GLOBAL",
+            "params": {
+              "global": "next14"
+            }
+          }
+        ]
+      },
+      {
+        "id": "AgendaV405",
+        "name": "Agenda generated",
+        "t": [
+          {
+            "id": "TriggerV4051",
+            "type": "T_ONCE"
+          },
+          {
+            "id": "TriggerV4052",
+            "type": "T_CRON",
+            "params": {
+              "cron_string": "*/15 * * * *"
+            }
+          }
+        ],
+        "a": [
+          {
+            "id": "ActionV4051",
+            "type": "A_DOCUMENT",
+            "params": {
+              "output": "NEWEST",
+              "folder": "content://com.android.externalstorage.documents/tree/primary%3AKustom%2Fdata%2Forg-agenda",
+              "name_filter": "snapshot.json",
+              "type": "FILE",
+              "name_filter_type": "CONTAINS"
+            }
+          },
+          {
+            "id": "ActionV4052",
+            "type": "A_FORMULA",
+            "params": {
+              "formula": "$wg(#last + \"?k=\" + df(yyyyMMddHHmm),json,.generated)$"
+            }
+          },
+          {
+            "id": "ActionV4053",
+            "type": "A_GLOBAL",
+            "params": {
+              "global": "generated"
+            }
+          }
+        ]
+      },
+      {
+        "id": "AgendaV406",
+        "name": "Agenda when",
+        "t": [
+          {
+            "id": "TriggerV4061",
+            "type": "T_ONCE"
+          },
+          {
+            "id": "TriggerV4062",
+            "type": "T_CRON",
+            "params": {
+              "cron_string": "*/15 * * * *"
+            }
+          }
+        ],
+        "a": [
+          {
+            "id": "ActionV4061",
+            "type": "A_DOCUMENT",
+            "params": {
+              "output": "NEWEST",
+              "folder": "content://com.android.externalstorage.documents/tree/primary%3AKustom%2Fdata%2Forg-agenda",
+              "name_filter": "snapshot.json",
+              "type": "FILE",
+              "name_filter_type": "CONTAINS"
+            }
+          },
+          {
+            "id": "ActionV4062",
+            "type": "A_FORMULA",
+            "params": {
+              "formula": "$wg(#last + \"?k=\" + df(yyyyMMddHHmm),json,.next.when)$"
+            }
+          },
+          {
+            "id": "ActionV4063",
+            "type": "A_GLOBAL",
+            "params": {
+              "global": "when"
+            }
+          }
+        ]
+      },
+      {
+        "id": "AgendaV407",
+        "name": "Agenda ntime",
+        "t": [
+          {
+            "id": "TriggerV4071",
+            "type": "T_ONCE"
+          },
+          {
+            "id": "TriggerV4072",
+            "type": "T_CRON",
+            "params": {
+              "cron_string": "*/15 * * * *"
+            }
+          }
+        ],
+        "a": [
+          {
+            "id": "ActionV4071",
+            "type": "A_DOCUMENT",
+            "params": {
+              "output": "NEWEST",
+              "folder": "content://com.android.externalstorage.documents/tree/primary%3AKustom%2Fdata%2Forg-agenda",
+              "name_filter": "snapshot.json",
+              "type": "FILE",
+              "name_filter_type": "CONTAINS"
+            }
+          },
+          {
+            "id": "ActionV4072",
+            "type": "A_FORMULA",
+            "params": {
+              "formula": "$wg(#last + \"?k=\" + df(yyyyMMddHHmm),json,.next.time)$"
+            }
+          },
+          {
+            "id": "ActionV4073",
+            "type": "A_GLOBAL",
+            "params": {
+              "global": "ntime"
+            }
+          }
+        ]
+      }
+    ],
+    "viewgroup_items": [
+      {
+        "internal_type": "StackLayerModule",
+        "internal_title": "Dashboard",
+        "position_anchor": "TOPLEFT",
+        "position_padding_left": 24,
+        "position_padding_top": 126,
+        "viewgroup_items": [
+          {
+            "internal_type": "StackLayerModule",
+            "internal_title": "Header row",
+            "config_stacking": "HORIZONTAL_CENTER",
+            "viewgroup_items": [
+              {
+                "internal_type": "OverlapLayerModule",
+                "internal_title": "Header",
+                "viewgroup_items": [
+                  {
+                    "internal_type": "ShapeModule",
+                    "shape_type": "RECT",
+                    "shape_width": 416.0,
+                    "shape_height": 166.0,
+                    "paint_color": "#00FFFFFF"
+                  },
+                  {
+                    "internal_type": "TextModule",
+                    "internal_title": "Date",
+                    "text_expression": "$df(\"EEE, MMM d\")$",
+                    "text_size": 21,
+                    "position_anchor": "TOPLEFT",
+                    "position_padding_left": 12,
+                    "position_padding_top": 23,
+                    "internal_toggles": {
+                      "paint_color": 100
+                    },
+                    "internal_globals": {
+                      "paint_color": "blue"
+                    }
+                  },
+                  {
+                    "internal_type": "TextModule",
+                    "internal_title": "Greeting",
+                    "text_expression": "$if(df(H)<12,\"Good morning, Jon.\",if(df(H)<18,\"Good afternoon, Jon.\",\"Good evening, Jon.\"))$",
+                    "text_size": 33,
+                    "position_anchor": "TOPLEFT",
+                    "position_padding_left": 12,
+                    "position_padding_top": 63,
+                    "internal_toggles": {
+                      "paint_color": 100
+                    },
+                    "internal_globals": {
+                      "paint_color": "ink"
+                    }
+                  }
+                ]
+              },
+              {
+                "internal_type": "OverlapLayerModule",
+                "internal_title": "Weather",
+                "viewgroup_items": [
+                  {
+                    "internal_type": "ShapeModule",
+                    "shape_type": "RECT",
+                    "shape_width": 229.0,
+                    "shape_height": 166.0,
+                    "paint_color": "#00FFFFFF"
+                  },
+                  {
+                    "internal_type": "TextModule",
+                    "internal_title": "Weather temperature",
+                    "text_expression": "$wi(tempc)$°",
+                    "text_size": 41,
+                    "position_anchor": "TOPLEFT",
+                    "position_padding_left": 36,
+                    "position_padding_top": 18,
+                    "internal_toggles": {
+                      "paint_color": 100
+                    },
+                    "internal_globals": {
+                      "paint_color": "yellow"
+                    }
+                  },
+                  {
+                    "internal_type": "TextModule",
+                    "internal_title": "Weather condition",
+                    "text_expression": "$wi(cond)$",
+                    "text_size": 19,
+                    "position_anchor": "TOPLEFT",
+                    "position_padding_left": 36,
+                    "position_padding_top": 70,
+                    "internal_toggles": {
+                      "paint_color": 100
+                    },
+                    "internal_globals": {
+                      "paint_color": "muted"
+                    }
+                  },
+                  {
+                    "internal_type": "TextModule",
+                    "internal_title": "Weather highs",
+                    "text_expression": "$\"H: \" + wf(maxc,0) + \"°  L: \" + wf(minc,0) + \"°\"$",
+                    "text_size": 17,
+                    "position_anchor": "TOPLEFT",
+                    "position_padding_left": 36,
+                    "position_padding_top": 99,
+                    "internal_toggles": {
+                      "paint_color": 100
+                    },
+                    "internal_globals": {
+                      "paint_color": "muted"
+                    }
+                  }
+                ],
+                "internal_events": [
+                  {
+                    "type": "SINGLE_TAP",
+                    "action": "LAUNCH_APP",
+                    "intent": "intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;component=org.breezyweather/.ui.main.MainActivity;S.org.kustom.intent.label=Weather;end"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "internal_type": "OverlapLayerModule",
+            "internal_title": "Agenda summary",
+            "viewgroup_items": [
+              {
+                "internal_type": "ShapeModule",
+                "shape_type": "RECT",
+                "shape_width": 645.0,
+                "shape_height": 392.0,
+                "paint_color": "#00FFFFFF"
+              },
+              {
+                "internal_type": "TextModule",
+                "internal_title": "Next label",
+                "text_expression": "NEXT",
+                "text_size": 20,
+                "position_anchor": "TOPLEFT",
+                "position_padding_left": 12,
+                "position_padding_top": 28,
+                "internal_toggles": {
+                  "paint_color": 100
+                },
+                "internal_globals": {
+                  "paint_color": "blue"
+                }
+              },
+              {
+                "internal_type": "TextModule",
+                "internal_title": "Next title",
+                "text_expression": "$if(if(br(org,generated)=\"\",gv(generated),br(org,generated))=\"\" | if(br(org,generated)=\"\",gv(generated),br(org,generated))=\"null\" | tc(cut,if(br(org,generated)=\"\",gv(generated),br(org,generated)),0,10)!=df(yyyy-MM-dd),\"Agenda needs refresh\",if(if(br(org,title)=\"\",gv(title),br(org,title))=\"null\",\"Nothing scheduled\",if(br(org,title)=\"\",gv(title),br(org,title))))$",
+                "text_size": 36,
+                "position_anchor": "TOPLEFT",
+                "position_padding_left": 12,
+                "position_padding_top": 68,
+                "internal_toggles": {
+                  "paint_color": 100
+                },
+                "internal_globals": {
+                  "paint_color": "ink"
+                },
+                "text_size_type": "FIXED_WIDTH",
+                "text_width": 633,
+                "text_align": "LEFT"
+              },
+              {
+                "internal_type": "TextModule",
+                "internal_title": "Next time",
+                "text_expression": "$if(if(br(org,generated)=\"\",gv(generated),br(org,generated))=\"\" | if(br(org,generated)=\"\",gv(generated),br(org,generated))=\"null\" | tc(cut,if(br(org,generated)=\"\",gv(generated),br(org,generated)),0,10)!=df(yyyy-MM-dd),\"Open Emacs to refresh\",if(if(br(org,when)=\"\",gv(when),br(org,when))=\"null\",\"\",if(br(org,when)=\"\",gv(when),br(org,when)) + if(if(br(org,ntime)=\"\",gv(ntime),br(org,ntime))=\"null\",\"\", \" · \" + if(br(org,ntime)=\"\",gv(ntime),br(org,ntime)))))$",
+                "text_size": 20,
+                "position_anchor": "TOPLEFT",
+                "position_padding_left": 12,
+                "position_padding_top": 164,
+                "internal_toggles": {
+                  "paint_color": 100
+                },
+                "internal_globals": {
+                  "paint_color": "muted"
+                }
+              },
+              {
+                "internal_type": "TextModule",
+                "internal_title": "Overdue value",
+                "text_expression": "$if(if(br(org,generated)=\"\",gv(generated),br(org,generated))=\"\" | if(br(org,generated)=\"\",gv(generated),br(org,generated))=\"null\" | tc(cut,if(br(org,generated)=\"\",gv(generated),br(org,generated)),0,10)!=df(yyyy-MM-dd),\"–\",if(br(org,overdue)=\"\",gv(overdue),br(org,overdue)))$",
+                "text_size": 40,
+                "position_anchor": "TOPLEFT",
+                "position_padding_left": 12,
+                "position_padding_top": 248,
+                "internal_toggles": {
+                  "paint_color": 100
+                },
+                "internal_globals": {
+                  "paint_color": "pink"
+                }
+              },
+              {
+                "internal_type": "TextModule",
+                "internal_title": "Overdue label",
+                "text_expression": "OVERDUE",
+                "text_size": 17,
+                "position_anchor": "TOPLEFT",
+                "position_padding_left": 12,
+                "position_padding_top": 301,
+                "internal_toggles": {
+                  "paint_color": 100
+                },
+                "internal_globals": {
+                  "paint_color": "muted"
+                }
+              },
+              {
+                "internal_type": "TextModule",
+                "internal_title": "Today value",
+                "text_expression": "$if(if(br(org,generated)=\"\",gv(generated),br(org,generated))=\"\" | if(br(org,generated)=\"\",gv(generated),br(org,generated))=\"null\" | tc(cut,if(br(org,generated)=\"\",gv(generated),br(org,generated)),0,10)!=df(yyyy-MM-dd),\"–\",if(br(org,today)=\"\",gv(today),br(org,today)))$",
+                "text_size": 40,
+                "position_anchor": "TOPLEFT",
+                "position_padding_left": 249,
+                "position_padding_top": 248,
+                "internal_toggles": {
+                  "paint_color": 100
+                },
+                "internal_globals": {
+                  "paint_color": "blue"
+                }
+              },
+              {
+                "internal_type": "TextModule",
+                "internal_title": "Today label",
+                "text_expression": "TODAY",
+                "text_size": 17,
+                "position_anchor": "TOPLEFT",
+                "position_padding_left": 249,
+                "position_padding_top": 301,
+                "internal_toggles": {
+                  "paint_color": 100
+                },
+                "internal_globals": {
+                  "paint_color": "muted"
+                }
+              },
+              {
+                "internal_type": "TextModule",
+                "internal_title": "Next14 value",
+                "text_expression": "$if(if(br(org,generated)=\"\",gv(generated),br(org,generated))=\"\" | if(br(org,generated)=\"\",gv(generated),br(org,generated))=\"null\" | tc(cut,if(br(org,generated)=\"\",gv(generated),br(org,generated)),0,10)!=df(yyyy-MM-dd),\"–\",if(br(org,next14)=\"\",gv(next14),br(org,next14)))$",
+                "text_size": 40,
+                "position_anchor": "TOPLEFT",
+                "position_padding_left": 467,
+                "position_padding_top": 248,
+                "internal_toggles": {
+                  "paint_color": 100
+                },
+                "internal_globals": {
+                  "paint_color": "green"
+                }
+              },
+              {
+                "internal_type": "TextModule",
+                "internal_title": "Next14 label",
+                "text_expression": "IN 14 DAYS",
+                "text_size": 17,
+                "position_anchor": "TOPLEFT",
+                "position_padding_left": 467,
+                "position_padding_top": 301,
+                "internal_toggles": {
+                  "paint_color": 100
+                },
+                "internal_globals": {
+                  "paint_color": "muted"
+                }
+              }
+            ],
+            "internal_events": [
+              {
+                "type": "SINGLE_TAP",
+                "action": "OPEN_LINK",
+                "url": "grove://agenda"
+              }
+            ]
+          },
+          {
+            "internal_type": "StackLayerModule",
+            "internal_title": "Capture row",
+            "config_stacking": "HORIZONTAL_CENTER",
+            "viewgroup_items": [
+              {
+                "internal_type": "OverlapLayerModule",
+                "internal_title": "TODO cell",
+                "viewgroup_items": [
+                  {
+                    "internal_type": "ShapeModule",
+                    "shape_type": "RECT",
+                    "shape_width": 237.0,
+                    "shape_height": 86.0,
+                    "paint_color": "#00FFFFFF"
+                  },
+                  {
+                    "internal_type": "TextModule",
+                    "internal_title": "TODO",
+                    "text_expression": "TODO",
+                    "text_size": 29,
+                    "position_anchor": "TOPLEFT",
+                    "position_padding_left": 12,
+                    "position_padding_top": 43,
+                    "internal_toggles": {
+                      "paint_color": 100
+                    },
+                    "internal_globals": {
+                      "paint_color": "blue"
+                    }
+                  }
+                ],
+                "internal_events": [
+                  {
+                    "type": "SINGLE_TAP",
+                    "action": "OPEN_LINK",
+                    "url": "grove://capture/todo"
+                  }
+                ]
+              },
+              {
+                "internal_type": "OverlapLayerModule",
+                "internal_title": "NOTE cell",
+                "viewgroup_items": [
+                  {
+                    "internal_type": "ShapeModule",
+                    "shape_type": "RECT",
+                    "shape_width": 408.0,
+                    "shape_height": 86.0,
+                    "paint_color": "#00FFFFFF"
+                  },
+                  {
+                    "internal_type": "TextModule",
+                    "internal_title": "NOTE",
+                    "text_expression": "NOTE",
+                    "text_size": 29,
+                    "position_anchor": "TOPLEFT",
+                    "position_padding_left": 12,
+                    "position_padding_top": 43,
+                    "internal_toggles": {
+                      "paint_color": 100
+                    },
+                    "internal_globals": {
+                      "paint_color": "blue"
+                    }
+                  }
+                ],
+                "internal_events": [
+                  {
+                    "type": "SINGLE_TAP",
+                    "action": "OPEN_LINK",
+                    "url": "grove://capture/quick-note"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "internal_type": "StackLayerModule",
+            "internal_title": "Launch row",
+            "config_stacking": "HORIZONTAL_CENTER",
+            "viewgroup_items": [
+              {
+                "internal_type": "OverlapLayerModule",
+                "internal_title": "Emacs cell",
+                "viewgroup_items": [
+                  {
+                    "internal_type": "ShapeModule",
+                    "shape_type": "RECT",
+                    "shape_width": 237.0,
+                    "shape_height": 86.0,
+                    "paint_color": "#00FFFFFF"
+                  },
+                  {
+                    "internal_type": "TextModule",
+                    "internal_title": "Emacs",
+                    "text_expression": "EMACS",
+                    "text_size": 29,
+                    "position_anchor": "TOPLEFT",
+                    "position_padding_left": 12,
+                    "position_padding_top": 43,
+                    "internal_toggles": {
+                      "paint_color": 100
+                    },
+                    "internal_globals": {
+                      "paint_color": "muted"
+                    }
+                  }
+                ],
+                "internal_events": [
+                  {
+                    "type": "SINGLE_TAP",
+                    "action": "LAUNCH_APP",
+                    "intent": "intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;component=org.gnu.emacs/.EmacsActivity;S.org.kustom.intent.label=Emacs;end"
+                  }
+                ]
+              },
+              {
+                "internal_type": "OverlapLayerModule",
+                "internal_title": "Agenda cell",
+                "viewgroup_items": [
+                  {
+                    "internal_type": "ShapeModule",
+                    "shape_type": "RECT",
+                    "shape_width": 408.0,
+                    "shape_height": 86.0,
+                    "paint_color": "#00FFFFFF"
+                  },
+                  {
+                    "internal_type": "TextModule",
+                    "internal_title": "Agenda",
+                    "text_expression": "AGENDA",
+                    "text_size": 29,
+                    "position_anchor": "TOPLEFT",
+                    "position_padding_left": 12,
+                    "position_padding_top": 43,
+                    "internal_toggles": {
+                      "paint_color": 100
+                    },
+                    "internal_globals": {
+                      "paint_color": "muted"
+                    }
+                  }
+                ],
+                "internal_events": [
+                  {
+                    "type": "SINGLE_TAP",
+                    "action": "OPEN_LINK",
+                    "url": "grove://agenda"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "internal_type": "OverlapLayerModule",
+            "internal_title": "Media",
+            "viewgroup_items": [
+              {
+                "internal_type": "ShapeModule",
+                "shape_type": "RECT",
+                "shape_width": 645.0,
+                "shape_height": 264.0,
+                "paint_color": "#00FFFFFF"
+              },
+              {
+                "internal_type": "TextModule",
+                "internal_title": "Media app",
+                "text_expression": "$if(mi(state)=PLAYING | mi(state)=PAUSED | mi(state)=BUFFERING,if(mi(package)=InfinityLoop1309.NewPipeEnhanced,\"PIPEPIPE\",if(mi(package)=de.danoeh.antennapod,\"ANTENNAPOD\",if(mi(package)=app.symfonik.music.player,\"SYMFONIUM\",\"MEDIA\"))),\"\")$",
+                "text_size": 17,
+                "position_anchor": "TOPLEFT",
+                "position_padding_left": 12,
+                "position_padding_top": 77,
+                "internal_toggles": {
+                  "paint_color": 100
+                },
+                "internal_globals": {
+                  "paint_color": "yellow"
+                }
+              },
+              {
+                "internal_type": "TextModule",
+                "internal_title": "Media title",
+                "text_expression": "$if(mi(state)=PLAYING | mi(state)=PAUSED | mi(state)=BUFFERING,if(mi(title)!=\"\",mi(title),ni(mi(package),title)),\"MEDIA\")$",
+                "text_size": 29,
+                "position_anchor": "TOPLEFT",
+                "position_padding_left": 12,
+                "position_padding_top": 117,
+                "internal_toggles": {
+                  "paint_color": 100
+                },
+                "internal_globals": {
+                  "paint_color": "ink"
+                },
+                "text_size_type": "FIXED_WIDTH",
+                "text_width": 573,
+                "text_align": "LEFT"
+              },
+              {
+                "internal_type": "TextModule",
+                "internal_title": "Media artist",
+                "text_expression": "$if(mi(state)=PLAYING | mi(state)=PAUSED | mi(state)=BUFFERING,if(mi(artist)!=\"\",mi(artist),ni(mi(package),text)),\"\")$",
+                "text_size": 19,
+                "position_anchor": "TOPLEFT",
+                "position_padding_left": 12,
+                "position_padding_top": 171,
+                "internal_toggles": {
+                  "paint_color": 100
+                },
+                "internal_globals": {
+                  "paint_color": "muted"
+                },
+                "text_size_type": "FIXED_WIDTH",
+                "text_width": 573,
+                "text_align": "LEFT"
+              }
+            ],
+            "internal_events": [
+              {
+                "type": "SINGLE_TAP",
+                "action": "MUSIC",
+                "music_action": "OPEN_APP"
+              }
+            ]
+          },
+          {
+            "internal_type": "OverlapLayerModule",
+            "internal_title": "Notifications",
+            "viewgroup_items": [
+              {
+                "internal_type": "ShapeModule",
+                "shape_type": "RECT",
+                "shape_width": 645.0,
+                "shape_height": 100.0,
+                "paint_color": "#00FFFFFF"
+              },
+              {
+                "internal_type": "TextModule",
+                "internal_title": "Notify label",
+                "text_expression": "$if(ni(pcount,org.telegram.messenger)+ni(pcount,eu.faircode.email)+ni(pcount,com.Slack)+ni(pcount,com.bluebubbles.messaging)+ni(pcount,com.google.android.apps.messaging)>0,\"NOTIFICATIONS\",\"\")$",
+                "text_size": 17,
+                "position_anchor": "TOPLEFT",
+                "position_padding_left": 12,
+                "position_padding_top": 33,
+                "internal_toggles": {
+                  "paint_color": 100
+                },
+                "internal_globals": {
+                  "paint_color": "muted"
+                }
+              },
+              {
+                "internal_type": "TextModule",
+                "internal_title": "Notify status",
+                "text_expression": "$if(ni(pcount,org.telegram.messenger)>0,\"Telegram \" + ni(pcount,org.telegram.messenger) + \"   \",\"\") + if(ni(pcount,eu.faircode.email)>0,\"Mail \" + ni(pcount,eu.faircode.email) + \"   \",\"\") + if(ni(pcount,com.Slack)>0,\"Slack \" + ni(pcount,com.Slack) + \"   \",\"\") + if(ni(pcount,com.bluebubbles.messaging)>0,\"Blue \" + ni(pcount,com.bluebubbles.messaging) + \"   \",\"\") + if(ni(pcount,com.google.android.apps.messaging)>0,\"Messages \" + ni(pcount,com.google.android.apps.messaging) + \"   \",\"\")$",
+                "text_size": 17,
+                "position_anchor": "TOPLEFT",
+                "position_padding_left": 12,
+                "position_padding_top": 73,
+                "internal_toggles": {
+                  "paint_color": 100
+                },
+                "internal_globals": {
+                  "paint_color": "blue"
+                },
+                "text_size_type": "FIXED_WIDTH",
+                "text_width": 633,
+                "text_align": "LEFT"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "background_type": "COLOR",
+    "background_color": "#FF161C27"
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:suderman:org-agenda-klwp:v1",
+  "title": "KLWP Org agenda snapshot",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["generated", "refresh", "next", "counts"],
+  "properties": {
+    "generated": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "refresh": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "next": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["title", "date", "when", "kind", "start", "end", "time"],
+          "properties": {
+            "title": { "type": "string" },
+            "date": { "type": "string", "format": "date" },
+            "when": { "type": "string" },
+            "kind": { "enum": ["event", "task"] },
+            "start": { "type": ["string", "null"], "pattern": "^[0-2][0-9]:[0-5][0-9]$" },
+            "end": { "type": ["string", "null"], "pattern": "^[0-2][0-9]:[0-5][0-9]$" },
+            "time": { "type": "string" }
+          }
+        }
+      ]
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["overdue", "today", "next14"],
+      "properties": {
+        "overdue": { "type": "integer", "minimum": 0 },
+        "today": { "type": "integer", "minimum": 0 },
+        "next14": { "type": "integer", "minimum": 0 }
+      }
+    }
+  }
+}

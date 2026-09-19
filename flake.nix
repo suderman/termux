@@ -25,6 +25,7 @@
             android-tools
             scrcpy
             jq
+            python3
           ];
           device = ''
             device_serial() {
