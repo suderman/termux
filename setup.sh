@@ -33,7 +33,8 @@ fi
 mkdir -p "$HOME/src"
 
 symlink /storage/emulated/0 "$HOME/storage"
-symlink /storage/emulated/0/Org "$HOME/org"
+symlink /storage/emulated/0/jon "$HOME/jon"
+symlink /storage/emulated/0/jon/org "$HOME/org"
 
 # Force terminal Emacs to use the Android Emacs app's config.
 rm -rf -- "$HOME/.emacs" "$HOME/.emacs.el" "$HOME/.emacs.elc" "$HOME/.emacs.d"
@@ -43,7 +44,8 @@ if [ -d "$emacs_home" ] && [ -w "$emacs_home" ]; then
   symlink "$emacs_home" "$HOME/emacs"
   symlink "$emacs_home/.config/emacs" "$HOME/.config/emacs"
   symlink /storage/emulated/0 "$emacs_home/storage"
-  symlink /storage/emulated/0/Org "$emacs_home/org"
+  symlink /storage/emulated/0/jon "$emacs_home/jon"
+  symlink /storage/emulated/0/jon/org "$emacs_home/org"
   symlink "$HOME" "$emacs_home/termux"
   symlink "$HOME/src" "$emacs_home/src"
 else
