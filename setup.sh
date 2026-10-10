@@ -98,6 +98,9 @@ git-clone-pull https://github.com/tmux-plugins/tpm "$dir/tpm"
 "$dir/tpm/bin/install_plugins"
 "$dir/tpm/bin/update_plugins" all
 
+# emacs (config is linked from the Emacs app above)
+pkg install -y emacs
+
 # yt-dlp
 pkg install -y python
 python -m pip install --upgrade yt-dlp

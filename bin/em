@@ -1,0 +1,46 @@
+#!/data/data/com.termux/files/usr/bin/bash
+# Termux port of the NixOS em launcher: a terminal frame on one Emacs daemon
+# per tmux session, or on the default daemon outside tmux. Daemons start on
+# demand and survive disconnecting the client.
+set -euo pipefail
+
+[[ $# -gt 0 ]] || set -- .
+
+if [[ -z ${TMUX_PANE-}${TMUX-} ]]; then
+  exec emacsclient --tty --alternate-editor= "$@"
+fi
+
+[[ -n ${TMUX_PANE-} && -n ${TMUX-} ]] || {
+  echo 'em: tmux pane or socket is missing' >&2
+  exit 1
+}
+socket=${TMUX%%,*}
+server=$(tmux display-message -p -t "$TMUX_PANE" '#{pid}:#{session_id}') || {
+  echo "em: cannot resolve tmux session for pane $TMUX_PANE" >&2
+  exit 1
+}
+
+# tmux reuses session IDs after its server restarts. The boot ID and server
+# PID keep a surviving daemon from being mistaken for a new session's.
+boot=$(</proc/sys/kernel/random/boot_id)
+name=em-$(printf '%s\n' "$boot:$socket:$server" | sha256sum)
+name=${name:0:27}
+
+if ! emacsclient -s "$name" -e t >/dev/null 2>&1; then
+  exec 9>"${TMPDIR:-/tmp}/$name.lock"
+  flock 9
+  if ! emacsclient -s "$name" -e t >/dev/null 2>&1; then
+    # Keep history, autosaves, and backups per daemon, as on NixOS.
+    export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}/emacs-workspaces/$name"
+    install -d -m 700 "$XDG_STATE_HOME"
+    if ! emacs --daemon="$name" >"$XDG_STATE_HOME/startup.log" 2>&1; then
+      cat "$XDG_STATE_HOME/startup.log" >&2
+      exit 1
+    fi
+  fi
+  flock -u 9
+  exec 9>&-
+fi
+
+params="((edger-tmux-pane-id . \"$TMUX_PANE\") (edger-tmux-socket . \"$TMUX\"))"
+exec emacsclient -s "$name" --tty -F "$params" "$@"

@@ -35,11 +35,13 @@ source "$ZSH/oh-my-zsh.sh"
 export PATH="$HOME/bin:$HOME/.termux/bin:$PATH"
 
 # Editor
-export EDITOR=nvim
-export VISUAL=nvim
+export EDITOR="emacs -nw"
+export VISUAL="emacs -nw"
 alias vim=nvim
 alias vi=nvim
 alias cdt="cd ~/.termux"
+alias ema="emacs -nw"
+alias emd='emacs -nw --init-directory "$PWD"'
 
 # tmux
 export TMUX_PLUGIN_MANAGER_PATH="$HOME/.local/share/tmux/plugins/"
