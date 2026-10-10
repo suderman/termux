@@ -1,8 +1,39 @@
 #!/data/data/com.termux/files/usr/bin/bash
 # Termux port of the NixOS em launcher: a terminal frame on one Emacs daemon
 # per tmux session, or on the default daemon outside tmux. Daemons start on
-# demand and survive disconnecting the client.
+# demand, survive disconnecting the client, and stop with their tmux session.
 set -euo pipefail
+
+# tmux reuses session IDs after its server restarts. The boot ID and server
+# PID keep a surviving daemon from being mistaken for a new session's.
+daemon_name() {
+  local socket=$1 server=$2 boot hash
+  boot=$(</proc/sys/kernel/random/boot_id)
+  hash=$(printf '%s\n' "$boot:$socket:$server" | sha256sum)
+  echo "em-${hash:0:24}"
+}
+
+# Nothing is left to prompt in, so auto-save unsaved buffers before exiting.
+# Only session daemons qualify; an empty name would reach the default server.
+stop_daemon() {
+  [[ $1 == em-* ]] || return 0
+  emacsclient -s "$1" -e '(progn (do-auto-save t) (kill-emacs))' >/dev/null 2>&1 || true
+}
+
+case ${1-} in
+--stop-tmux)
+  # tmux session-closed hook: SOCKET SERVER_PID SESSION_ID
+  name=$(daemon_name "$2" "$3:$4")
+  stop_daemon "$name"
+  exit
+  ;;
+--watch-tmux)
+  # tmux runs no hook when its last pane exits, so follow the server: PID NAME
+  tail --pid="$2" -s 10 -f /dev/null
+  stop_daemon "$3"
+  exit
+  ;;
+esac
 
 [[ $# -gt 0 ]] || set -- .
 
@@ -10,6 +41,7 @@ state=${XDG_STATE_HOME:-$HOME/.local/state}
 name=server
 log=$state/emacs/startup.log
 frame=()
+server_pid=
 
 if [[ -n ${TMUX_PANE-}${TMUX-} ]]; then
   [[ -n ${TMUX_PANE-} && -n ${TMUX-} ]] || {
@@ -21,12 +53,8 @@ if [[ -n ${TMUX_PANE-}${TMUX-} ]]; then
     echo "em: cannot resolve tmux session for pane $TMUX_PANE" >&2
     exit 1
   }
-
-  # tmux reuses session IDs after its server restarts. The boot ID and server
-  # PID keep a surviving daemon from being mistaken for a new session's.
-  boot=$(</proc/sys/kernel/random/boot_id)
-  name=em-$(printf '%s\n' "$boot:$socket:$server" | sha256sum)
-  name=${name:0:27}
+  server_pid=${server%%:*}
+  name=$(daemon_name "$socket" "$server")
   # Keep history, autosaves, and backups per daemon, as on NixOS.
   state=$state/emacs-workspaces/$name
   log=$state/startup.log
@@ -42,6 +70,9 @@ if ! emacsclient -s "$name" -e t >/dev/null 2>&1; then
     if ! emacs --daemon="$name" >"$log" 2>&1; then
       cat "$log" >&2
       exit 1
+    fi
+    if [[ -n $server_pid ]]; then
+      setsid -f "$0" --watch-tmux "$server_pid" "$name" </dev/null >/dev/null 2>&1 9>&-
     fi
   fi
   flock -u 9
