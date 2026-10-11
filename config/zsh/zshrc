@@ -46,6 +46,16 @@ alias emd='emacs -nw --init-directory "$PWD"'
 # tmux
 export TMUX_PLUGIN_MANAGER_PATH="$HOME/.local/share/tmux/plugins/"
 
+# Bare tmux attaches to the running server, as herdr does, and starts one
+# when none is running. A shell function leaves scripts and plugins on the
+# real binary, which they call constantly.
+tmux() {
+  if (( $# )) || [[ -n $TMUX ]]; then command tmux "$@"
+  elif command tmux has-session 2>/dev/null; then command tmux attach-session
+  else command tmux new-session
+  fi
+}
+
 # Customize FZF
 source "$HOME/.config/zsh/fzf.sh"
 
