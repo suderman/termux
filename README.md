@@ -170,10 +170,20 @@ Termux:Widget or KISS means pinning again.
 
 ## Terminal font
 
-Run `install-termux-font` in Termux to install the pinned official
-`CommitMono Nerd Font Mono` release at `~/.termux/font.ttf`. The helper verifies
-both the Nerd Fonts archive and selected regular face, preserves the prior font
-as `~/.termux/font.ttf.before-commit-mono`, and reloads Termux settings.
+`setup.sh` links `~/.termux/font.ttf` to
+`jon/profile/fonts/CommitMono/CommitMonoNerdFontMono-Termux.ttf` on shared
+storage, which Syncthing keeps current. Termux has no font fallback, so that
+file is `CommitMono Nerd Font Mono` with missing symbols, such as Claude Code's
+`⏵`, copied in from Ioskeley Mono. Rebuild it with `build.sh` in the same
+folder on a NixOS host. Termux loads a changed font only after the app is
+killed and relaunched; `termux-reload-settings` is not enough.
+
+`install-termux-font` installs the pinned, unpatched official release instead.
+It refuses to replace a linked `font.ttf`, so remove the link first to use it;
+the next `setup.sh` run then stops at the font link until that file is removed.
+The helper verifies both the Nerd Fonts archive and selected regular face,
+preserves the prior font as `~/.termux/font.ttf.before-commit-mono`, and
+reloads Termux settings.
 
 Restore the previous font with:
 

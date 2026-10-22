@@ -11,6 +11,12 @@ backup="$HOME/.termux/font.ttf.before-commit-mono"
 work="$(mktemp -d "${TMPDIR:-${PREFIX:-/tmp}/tmp}/termux-font.XXXXXX")"
 trap 'rm -rf -- "$work"' EXIT
 
+# setup.sh links the patched font here; leave that link alone.
+if [[ -L $destination ]]; then
+  printf 'Refusing to replace %s, which links to %s.\n' "$destination" "$(readlink -- "$destination")" >&2
+  exit 1
+fi
+
 if [[ -f $destination ]] && [[ $(sha256sum "$destination" | cut -d ' ' -f 1) == "$font_sha256" ]]; then
   termux-reload-settings
   printf 'CommitMono Nerd Font Mono %s is already installed.\n' "$version"

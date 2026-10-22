@@ -36,6 +36,10 @@ symlink /storage/emulated/0 "$HOME/storage"
 symlink /storage/emulated/0/jon "$HOME/jon"
 symlink /storage/emulated/0/jon/org "$HOME/org"
 
+# Terminal font: CommitMono Nerd Font Mono patched with missing symbols such as
+# ⏵, synced through Syncthing. Termux reads it only on a full app restart.
+symlink /storage/emulated/0/jon/profile/fonts/CommitMono/CommitMonoNerdFontMono-Termux.ttf "$TERMUX/font.ttf"
+
 # Force terminal Emacs to use the Android Emacs app's config.
 rm -rf -- "$HOME/.emacs" "$HOME/.emacs.el" "$HOME/.emacs.elc" "$HOME/.emacs.d"
 
