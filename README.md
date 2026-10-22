@@ -152,6 +152,22 @@ git -C ~/.termux push
 
 Zsh is the default interactive shell; scripts use their explicit shebangs.
 
+## Launcher shortcuts
+
+`setup.sh` links `shortcuts/` to `~/.shortcuts`, where Termux:Widget finds
+scripts for its home-screen widget. To also search and run a script from the
+KISS launcher like an app, pin it:
+
+1. Add the script to `shortcuts/` and make it executable.
+2. Open Termux:Widget's shortcut creator and tap the script. The launcher
+   accepts the pin request.
+3. Search the script's name in KISS.
+
+KISS hides the shortcuts of any app it excludes, so Termux:Widget must not be
+excluded in KISS, even though the other Termux add-ons can be. Pins live in
+Android's shortcut service, not in this repository, so reinstalling
+Termux:Widget or KISS means pinning again.
+
 ## Terminal font
 
 Run `install-termux-font` in Termux to install the pinned official
