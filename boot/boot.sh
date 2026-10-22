@@ -7,3 +7,4 @@ trap termux-wake-unlock EXIT
 export SVDIR="$PREFIX/var/service"
 . "$PREFIX/etc/profile.d/start-services.sh"
 sv-enable sshd
+sv-enable ssh-agent

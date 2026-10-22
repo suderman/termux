@@ -206,8 +206,19 @@ sh /sdcard/Android/permission.sh
 
 ## Services
 
-`sshd`, `mpd`, `mpd-url`, and `syncthing` run under `termux-services`.
-`crond`, `mpdscribble`, and `hermes` are intentionally disabled.
+`sshd`, `ssh-agent`, `mpd`, `mpd-url`, and `syncthing` run under
+`termux-services`. `crond`, `mpdscribble`, and `hermes` are intentionally
+disabled.
+
+`ssh-agent` is the service the `openssh` package ships. Its socket is
+`$PREFIX/var/run/ssh-agent.socket`. Outgoing ssh adds keys to it for an hour
+after the first passphrase. `setup.sh` puts these lines at the top of
+`~/.ssh/config` unless it already sets `IdentityAgent`:
+
+```
+IdentityAgent /data/data/com.termux/files/usr/var/run/ssh-agent.socket
+AddKeysToAgent 1h
+```
 
 ```sh
 sv status "$PREFIX/var/service/sshd"

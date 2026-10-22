@@ -71,6 +71,18 @@ mkdir -p "$PREFIX/etc/ssh/sshd_config.d"
 ln -sf "$XDG_CONFIG_HOME/ssh/sshd_config.d/termux.conf" \
   "$PREFIX/etc/ssh/sshd_config.d/termux.conf"
 
+# Outgoing ssh keeps keys in the packaged ssh-agent for an hour. The lines go
+# above every Host block so they apply to all hosts.
+mkdir -p "$HOME/.ssh"
+touch "$HOME/.ssh/config"
+if ! grep -qi '^[[:space:]]*IdentityAgent' "$HOME/.ssh/config"; then
+  cp "$HOME/.ssh/config" "$HOME/.ssh/config.bak"
+  {
+    printf '%s\n' "IdentityAgent $PREFIX/var/run/ssh-agent.socket" 'AddKeysToAgent 1h' ''
+    cat "$HOME/.ssh/config.bak"
+  } >"$HOME/.ssh/config"
+fi
+
 # bash
 pkg install -y bash
 symlink "$XDG_CONFIG_HOME/bash/bashrc" "$HOME/.bashrc"
@@ -156,6 +168,7 @@ sv-enable sshd
 sv-enable mpd
 sv-enable mpd-url
 sv-enable syncthing
+sv-enable ssh-agent
 
 for service in crond mpdscribble hermes; do
   if [ -d "$SVDIR/$service" ]; then
@@ -170,7 +183,7 @@ if tmux list-sessions >/dev/null 2>&1; then
 fi
 
 sshd -t
-for service in sshd mpd mpd-url syncthing crond mpdscribble hermes; do
+for service in sshd ssh-agent mpd mpd-url syncthing crond mpdscribble hermes; do
   if [ -d "$SVDIR/$service" ]; then
     sv status "$service"
   fi
