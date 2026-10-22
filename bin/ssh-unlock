@@ -1,0 +1,61 @@
+#!/data/data/com.termux/files/usr/bin/bash
+set -euo pipefail
+
+# Unlock ~/.ssh/id_ed25519 into ssh-agent for an hour with a fingerprint.
+#
+#   ssh-unlock init        store the key's passphrase, encrypted by a keystore key
+#   ssh-unlock [CMD ...]   add the key unless the agent has it, then run CMD
+#
+# The passphrase is encrypted with a secret only the hardware keystore key
+# "ssh-unlock" can produce, so the stored copy is useless off this phone.
+# Without a fingerprint match, or before init, ssh-add asks for the passphrase.
+
+# ssh-add runs this script again as its askpass program.
+if [[ -n ${SSH_UNLOCK_PASS:-} ]]; then
+  printf '%s\n' "$SSH_UNLOCK_PASS"
+  exit
+fi
+
+alias=ssh-unlock
+key=$HOME/.ssh/id_ed25519
+store=$HOME/.ssh/id_ed25519.passphrase.enc
+export SSH_AUTH_SOCK=$PREFIX/var/run/ssh-agent.socket
+
+# RSA PKCS#1 v1.5 signatures are deterministic, so this is the same every time.
+secret() {
+  printf '%s' "$alias" | termux-keystore sign "$alias" SHA256withRSA | sha256sum | cut -d' ' -f1
+}
+
+init() {
+  local pass
+  if ! termux-keystore list | jq -e --arg a "$alias" 'any(.[]; .alias == $a)' >/dev/null; then
+    termux-keystore generate "$alias" -a RSA -s 2048 >/dev/null
+  fi
+  read -rsp "Passphrase for $key: " pass
+  echo
+  ssh-keygen -y -P "$pass" -f "$key" >/dev/null || { echo "Wrong passphrase" >&2; exit 1; }
+  printf '%s' "$pass" |
+    SSH_UNLOCK_SECRET=$(secret) openssl enc -aes-256-cbc -pbkdf2 -salt -pass env:SSH_UNLOCK_SECRET -out "$store"
+  chmod 600 "$store"
+  echo "Stored. ssh-unlock will now ask for a fingerprint instead."
+}
+
+unlock() {
+  local pass
+  ssh-add -l 2>/dev/null | grep -qF "$(ssh-keygen -lf "$key.pub" | cut -d' ' -f2)" && return
+  if [[ -f $store ]] &&
+    termux-fingerprint -t "Unlock ssh key" -d "for one hour" | jq -e '.auth_result == "AUTH_RESULT_SUCCESS"' >/dev/null &&
+    pass=$(SSH_UNLOCK_SECRET=$(secret) openssl enc -d -aes-256-cbc -pbkdf2 -pass env:SSH_UNLOCK_SECRET -in "$store"); then
+    SSH_UNLOCK_PASS=$pass SSH_ASKPASS=$(realpath "$0") SSH_ASKPASS_REQUIRE=force \
+      ssh-add -t 1h "$key" 2>/dev/null && return
+  fi
+  ssh-add -t 1h "$key"
+}
+
+if [[ ${1:-} == init ]]; then
+  init
+  exit
+fi
+# A failed unlock leaves CMD to ask for the passphrase itself.
+unlock || [[ $# -gt 0 ]]
+[[ $# -eq 0 ]] || exec "$@"

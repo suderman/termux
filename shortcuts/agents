@@ -1,2 +1,2 @@
 #!/data/data/com.termux/files/usr/bin/bash
-exec ssh -t kit herdr-link pick
+exec "$HOME/bin/ssh-unlock" ssh -t kit herdr-link pick

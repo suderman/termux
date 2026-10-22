@@ -220,6 +220,12 @@ IdentityAgent /data/data/com.termux/files/usr/var/run/ssh-agent.socket
 AddKeysToAgent 1h
 ```
 
+`ssh-unlock` adds `~/.ssh/id_ed25519` to the agent for an hour after a
+fingerprint, and runs any command given after it. Run `ssh-unlock init` once
+to store the key's passphrase, encrypted with a secret only the hardware
+keystore key `ssh-unlock` can produce. Without a fingerprint match it asks for
+the passphrase.
+
 ```sh
 sv status "$PREFIX/var/service/sshd"
 sv log sshd
