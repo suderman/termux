@@ -34,6 +34,9 @@ source "$ZSH/oh-my-zsh.sh"
 # Path
 export PATH="$HOME/bin:$HOME/.termux/bin:$PATH"
 
+# ssh-agent service; ssh-unlock loads keys into it
+export SSH_AUTH_SOCK="$PREFIX/var/run/ssh-agent.socket"
+
 # Editor
 export EDITOR="emacs -nw"
 export VISUAL="emacs -nw"
