@@ -52,6 +52,7 @@ Never issue an unchecked sequence of taps, swipes, typing, and key presses. Dial
 | `android-type TEXT` | Enter one base64-transported, single-line text value. |
 | `android-key KEYCODE_BACK` | Send a key event such as `KEYCODE_BACK`, `KEYCODE_HOME`, or `KEYCODE_ENTER`. |
 | `android-open PACKAGE` | Launch an installed package's launcher activity. |
+| `android-settings [check\|apply] [FILE]` | Compare the phone with `android-settings.conf`, or write what differs. Record every setting changed over ADB there. |
 
 - Helpers reject zero, unauthorized, offline, or multiple attached devices. For deliberate multi-device work, use raw `adb -s SERIAL ...`.
 - Repository-local captures belong under `android-control/` or in files ending with `.android-control.png` or `.android-control.xml`; Git ignores those paths.

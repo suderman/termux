@@ -67,6 +67,13 @@ android-ui
 scrcpy
 ```
 
+`android-settings.conf` records Android settings the phone should have, some of
+which GrapheneOS hides: holding power opens the digital assistant, and power with
+volume up opens the power menu. `android-settings check` compares the phone with
+it and exits 1 on a difference; `android-settings apply` writes what differs.
+Add a line there whenever a setting is changed over ADB, so a rebuilt phone gets
+it back.
+
 Use ADB for control and scrcpy for the supervised live view. Observe the screen
 or UI hierarchy, perform one action, and verify the result before continuing.
 See [`AGENTS.md`](AGENTS.md) for the full safety loop, command details, package
@@ -131,6 +138,14 @@ git -C ~/.termux status --short --branch
 
 6. Put the desired public key in `~/.ssh/authorized_keys` before relying on remote access. SSH permits public-key authentication only.
 7. Open Termux:Boot once, allow Termux notifications, and manually set Termux battery usage to Unrestricted. Keep the permanent wake lock disabled.
+8. From the development host, restore the Android settings GrapheneOS keeps out of its Settings app, then check them:
+
+```sh
+android-settings apply
+android-settings check
+```
+
+9. Install June (`nix run .#android-install` in the June repository) and select it under Settings, Apps, Default apps, Digital assistant app. Holding power then opens June, and power with volume up opens the power menu.
 
 `setup.sh` manages packages, links, services, scheduled jobs, and selected
 runtime copies. It removes legacy `~/.emacs*` and `~/.emacs.d` paths so Emacs

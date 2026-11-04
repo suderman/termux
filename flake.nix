@@ -130,6 +130,36 @@
               [ "$#" -eq 1 ] || { echo "Usage: android-key KEYCODE_BACK|KEYCODE_HOME|..." >&2; exit 2; }
               android_adb shell input keyevent "$1"
             '';
+            android-settings = mkAndroidCommand "android-settings" ''
+              mode="''${1:-check}"
+              file="''${2:-android-settings.conf}"
+              case "$mode" in
+                check | apply) ;;
+                *) echo "Usage: android-settings [check|apply] [android-settings.conf]" >&2; exit 2 ;;
+              esac
+              [ -f "$file" ] || { echo "No $file here. Run from the termux repository or name the file." >&2; exit 2; }
+              # Fail early, before reading the file, when no single phone is ready.
+              device_serial >/dev/null
+              status=0
+              while read -r namespace key value; do
+                case "$namespace" in
+                  "" | "#"*) continue ;;
+                  global | secure | system) ;;
+                  *) echo "Unknown namespace '$namespace' in $file" >&2; exit 2 ;;
+                esac
+                current="$(android_adb shell settings get "$namespace" "$key" < /dev/null | tr -d '\r')"
+                if [ "$current" = "$value" ]; then
+                  echo "ok       $namespace $key = $value"
+                elif [ "$mode" = apply ]; then
+                  android_adb shell settings put "$namespace" "$key" "$value" < /dev/null
+                  echo "set      $namespace $key = $value (was $current)"
+                else
+                  echo "differs  $namespace $key = $current, want $value"
+                  status=1
+                fi
+              done < "$file"
+              exit "$status"
+            '';
             android-open = mkAndroidCommand "android-open" ''
               [ "$#" -eq 1 ] || { echo "Usage: android-open PACKAGE" >&2; exit 2; }
               if ! result="$(android_adb shell monkey -p "$1" -c android.intent.category.LAUNCHER 1 2>&1)"; then
