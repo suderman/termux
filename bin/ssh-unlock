@@ -16,10 +16,13 @@ if [[ -n ${SSH_UNLOCK_PASS:-} ]]; then
   exit
 fi
 
+# Other apps sharing Termux's user, such as the Emacs APK, run this with
+# their own HOME and no PREFIX.
+termux=/data/data/com.termux/files
 alias=ssh-unlock
-key=$HOME/.ssh/id_ed25519
-store=$HOME/.ssh/id_ed25519.passphrase.enc
-export SSH_AUTH_SOCK=$PREFIX/var/run/ssh-agent.socket
+key=$termux/home/.ssh/id_ed25519
+store=$termux/home/.ssh/id_ed25519.passphrase.enc
+export SSH_AUTH_SOCK=$termux/usr/var/run/ssh-agent.socket
 
 # RSA PKCS#1 v1.5 signatures are deterministic, so this is the same every time.
 secret() {

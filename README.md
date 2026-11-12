@@ -252,14 +252,21 @@ sh /sdcard/Android/permission.sh
 disabled.
 
 `ssh-agent` is the service the `openssh` package ships. Its socket is
-`$PREFIX/var/run/ssh-agent.socket`. Outgoing ssh adds keys to it for an hour
-after the first passphrase. `setup.sh` puts these lines at the top of
-`~/.ssh/config` unless it already sets `IdentityAgent`:
+`$PREFIX/var/run/ssh-agent.socket`. Outgoing ssh adds keys to it for an hour.
+`setup.sh` puts these lines at the top of `~/.ssh/config`, the first two unless
+it already sets `IdentityAgent` and the third unless it already mentions
+`ssh-unlock`:
 
 ```
 IdentityAgent /data/data/com.termux/files/usr/var/run/ssh-agent.socket
 AddKeysToAgent 1h
+Match exec "%d/bin/ssh-unlock"
 ```
+
+The `Match exec` line runs `ssh-unlock` before every connection: it returns at
+once when the agent has the key and asks for a fingerprint when it does not, so
+`ssh kit`, Git, and the Emacs APK's TRAMP links unlock the same way. `%d` is
+ssh's home directory, which stays Termux's home when Emacs runs ssh.
 
 `ssh-unlock` adds `~/.ssh/id_ed25519` to the agent for an hour after a
 fingerprint, and runs any command given after it. Run `ssh-unlock init` once

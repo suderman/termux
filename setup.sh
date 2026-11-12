@@ -75,8 +75,11 @@ mkdir -p "$PREFIX/etc/ssh/sshd_config.d"
 ln -sf "$XDG_CONFIG_HOME/ssh/sshd_config.d/termux.conf" \
   "$PREFIX/etc/ssh/sshd_config.d/termux.conf"
 
-# Outgoing ssh keeps keys in the packaged ssh-agent for an hour. The lines go
-# above every Host block so they apply to all hosts.
+# Outgoing ssh keeps keys in the packaged ssh-agent for an hour, and asks
+# ssh-unlock for a fingerprint before connecting whenever the agent has lost
+# the key. ssh, git, and the Emacs APK's TRAMP all read this file. The lines
+# go above every Host block so they apply to all hosts; %d is ssh's own idea
+# of home, which stays Termux's when Emacs runs ssh.
 mkdir -p "$HOME/.ssh"
 touch "$HOME/.ssh/config"
 if ! grep -qi '^[[:space:]]*IdentityAgent' "$HOME/.ssh/config"; then
@@ -85,6 +88,11 @@ if ! grep -qi '^[[:space:]]*IdentityAgent' "$HOME/.ssh/config"; then
     printf '%s\n' "IdentityAgent $PREFIX/var/run/ssh-agent.socket" 'AddKeysToAgent 1h' ''
     cat "$HOME/.ssh/config.bak"
   } >"$HOME/.ssh/config"
+fi
+if ! grep -q 'ssh-unlock' "$HOME/.ssh/config"; then
+  cp "$HOME/.ssh/config" "$HOME/.ssh/config.bak"
+  awk '{ print } /^AddKeysToAgent/ && !done { print "Match exec \"%d/bin/ssh-unlock\""; done = 1 }' \
+    "$HOME/.ssh/config.bak" >"$HOME/.ssh/config"
 fi
 
 # bash
