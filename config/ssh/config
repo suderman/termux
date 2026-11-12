@@ -1,0 +1,21 @@
+# Outgoing ssh for Termux, Git, and the Emacs APK's TRAMP. setup.sh links
+# ~/.ssh/config here. The Host blocks come from the NixOS flake: kit exports
+# them to the synced profile, and ssh-hosts copies them into ~/.ssh, because
+# ssh refuses to include files from shared storage.
+
+# ssh-hosts never matches. It runs here so the includes read fresh copies.
+# Include expands ~ from $HOME, which is the Emacs APK's own home there.
+Match exec "%d/bin/ssh-hosts"
+Match all
+Include /data/data/com.termux/files/home/.ssh/config.local
+Include /data/data/com.termux/files/home/.ssh/hosts.conf
+
+# Defaults go last, because ssh keeps the first value it reads.
+Host *
+  IdentityAgent /data/data/com.termux/files/usr/var/run/ssh-agent.socket
+  AddKeysToAgent 1h
+  StrictHostKeyChecking accept-new
+  LogLevel ERROR
+
+# Ask for a fingerprint whenever the agent has lost the key.
+Match exec "%d/bin/ssh-unlock"

@@ -253,20 +253,42 @@ disabled.
 
 `ssh-agent` is the service the `openssh` package ships. Its socket is
 `$PREFIX/var/run/ssh-agent.socket`. Outgoing ssh adds keys to it for an hour.
-`setup.sh` puts these lines at the top of `~/.ssh/config`, the first two unless
-it already sets `IdentityAgent` and the third unless it already mentions
-`ssh-unlock`:
+
+`setup.sh` links `~/.ssh/config` to `config/ssh/config`, moving a hand-written
+file aside to `~/.ssh/config.before-managed` the first time. Termux ssh, Git,
+and the Emacs APK's TRAMP all read it:
 
 ```
-IdentityAgent /data/data/com.termux/files/usr/var/run/ssh-agent.socket
-AddKeysToAgent 1h
+Match exec "%d/bin/ssh-hosts"
+Match all
+Include /data/data/com.termux/files/home/.ssh/config.local
+Include /data/data/com.termux/files/home/.ssh/hosts.conf
+
+Host *
+  IdentityAgent /data/data/com.termux/files/usr/var/run/ssh-agent.socket
+  AddKeysToAgent 1h
+  StrictHostKeyChecking accept-new
+  LogLevel ERROR
+
 Match exec "%d/bin/ssh-unlock"
 ```
 
-The `Match exec` line runs `ssh-unlock` before every connection: it returns at
-once when the agent has the key and asks for a fingerprint when it does not, so
-`ssh kit`, Git, and the Emacs APK's TRAMP links unlock the same way. `%d` is
-ssh's home directory, which stays Termux's home when Emacs runs ssh.
+The defaults come last because ssh keeps the first value it reads.
+
+The Host blocks come from the NixOS flake. On kit, Home Manager's
+`programs.ssh.exportHosts` writes the flake's generated Host blocks, without
+its `Host *` defaults, to `~/profile/apps/ssh/hosts.conf`, and copies kit's
+private `~/.ssh/config.local` beside it. Syncthing carries both to
+`/storage/emulated/0/jon/profile/apps/ssh`. ssh refuses to include files from
+shared storage, so `ssh-hosts` copies them into `~/.ssh` with mode 600 whenever
+they change, before every connection. Change hosts in the flake or in kit's
+`config.local`, not on the phone.
+
+`ssh-unlock` runs before every connection too: it returns at once when the
+agent has the key and asks for a fingerprint when it does not, so `ssh kit`,
+Git, and TRAMP links unlock the same way. `%d` is ssh's home directory, which
+stays Termux's home when Emacs runs ssh. `Include` expands `~` from `$HOME`
+instead, which is the APK's own home there, so the includes use full paths.
 
 `ssh-unlock` adds `~/.ssh/id_ed25519` to the agent for an hour after a
 fingerprint, and runs any command given after it. Run `ssh-unlock init` once

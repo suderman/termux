@@ -96,6 +96,7 @@ Never issue an unchecked sequence of taps, swipes, typing, and key presses. Dial
 ## SSH changes
 
 - SSH listens on all interfaces but must remain public-key-only through `config/ssh/sshd_config.d/termux.conf`.
+- `~/.ssh/config` links to `config/ssh/config`. Its Host blocks come from the NixOS flake through `~/.ssh/hosts.conf` and `~/.ssh/config.local`, which `bin/ssh-hosts` copies from the synced profile. Do not edit those copies on the phone.
 - Before restarting SSH remotely, run `sshd -t`, keep the current session open, and prove a second `ssh gem` connection works.
 - After service changes, check `sv status "$PREFIX/var/service/sshd"`; it must not say `normally down`.
 

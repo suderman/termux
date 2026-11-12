@@ -1,0 +1,23 @@
+#!/data/data/com.termux/files/usr/bin/sh
+# Copy the SSH host lists kit exports to the synced profile into ~/.ssh
+# whenever they change. ~/.ssh/config runs this before including them, from
+# Termux and from the Emacs APK alike, so it must stay fast and quiet.
+
+from=/storage/emulated/0/jon/profile/apps/ssh
+to=/data/data/com.termux/files/home/.ssh
+
+for name in hosts.conf config.local; do
+  src=$from/$name
+  dest=$to/$name
+  # The copy keeps the synced file's time, so any difference means a change.
+  if [ -f "$src" ] && { [ "$src" -nt "$dest" ] || [ "$src" -ot "$dest" ]; }; then
+    tmp=$(mktemp "$dest.XXXXXX") &&
+      cp --preserve=timestamps "$src" "$tmp" &&
+      chmod 600 "$tmp" &&
+      mv -f "$tmp" "$dest" ||
+      rm -f "$tmp"
+  fi
+done 2>/dev/null
+
+# Never match, so the Match block that runs this stays empty.
+exit 1
