@@ -99,6 +99,12 @@ Never issue an unchecked sequence of taps, swipes, typing, and key presses. Dial
 - App passwords live in `~/.secrets/fastmail` and `~/.secrets/gmail`, outside this public repository. Never copy, print, or commit them.
 - Each account's `.sync-if-1` gate pauses its sync when it holds anything but `1`.
 
+## Herdr
+
+- Install and update Herdr only with `bin/install-herdr`. Never run Herdr's official installer, which refuses Android.
+- `config/herdr/config.toml` copies the portable part of the NixOS flake's `modules/home/default/options/herdr/settings.nix`. Keep `keys.command` and `ui.sound` out of it. Everything else Herdr writes in `config/herdr` is runtime state.
+- Saved machines attach to the Herdr servers kit and cog already run. Never install, replace, restart, or hand off a remote server from the phone.
+
 ## SSH changes
 
 - SSH listens on all interfaces but must remain public-key-only through `config/ssh/sshd_config.d/termux.conf`.

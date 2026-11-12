@@ -145,6 +145,10 @@ pkg install -y syncthing
 pkg install -y isync notmuch msmtp
 mkdir -m700 -p "$HOME/.secrets" "$XDG_DATA_HOME/mail"
 
+# herdr: the official Linux aarch64 binary runs natively, but Herdr's installer
+# refuses Android. install-herdr installs or updates to the latest release.
+install-herdr
+
 # hermes-agent
 # curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash 
 # if install gets stuck:
@@ -195,6 +199,15 @@ done
 for folder in ORG MEDIA PROFILE; do
   syncthing cli config folders "$folder" ignore-perms set true ||
     echo "Warning: could not set ignorePerms on Syncthing folder $folder" >&2
+done
+
+# Saved Herdr machines attach to the servers these hosts already run. Adding one
+# asks before installing or replacing anything there; the default is No.
+for machine in kit cog; do
+  if ! herdr machine list --json | jq -e --arg label "$machine" 'any(.[]; .label == $label)' >/dev/null; then
+    herdr machine add "$machine" --remote-session default ||
+      echo "Warning: could not save Herdr machine $machine; run: herdr machine add $machine" >&2
+  fi
 done
 
 termux-reload-settings

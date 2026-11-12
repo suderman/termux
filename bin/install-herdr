@@ -1,0 +1,78 @@
+#!/data/data/com.termux/files/usr/bin/bash
+# Install or update Herdr from its official herdr-linux-aarch64 release, which
+# runs natively in Termux. Herdr's own installer refuses Android, so this skips
+# it. Usage: install-herdr [--check] [VERSION]
+#   VERSION, such as 0.9.5, pins or rolls back; the default is the latest
+#   stable release. --check only compares the installed and release versions.
+set -euo pipefail
+
+repo=herdrdev/herdr
+asset=herdr-linux-aarch64
+prefix="${PREFIX:-/data/data/com.termux/files/usr}"
+destination="$prefix/bin/herdr"
+
+check=false
+if [[ ${1-} == --check ]]; then
+  check=true
+  shift
+fi
+if [[ $# -gt 1 || ${1-} == -* ]]; then
+  echo "Usage: install-herdr [--check] [VERSION]" >&2
+  exit 2
+fi
+
+if [[ $(uname -m) != aarch64 ]]; then
+  echo "install-herdr: expected aarch64, found $(uname -m)" >&2
+  exit 1
+fi
+
+if [[ -n ${1-} ]]; then
+  api="https://api.github.com/repos/$repo/releases/tags/v${1#v}"
+else
+  api="https://api.github.com/repos/$repo/releases/latest"
+fi
+release="$(curl --fail --location --silent --show-error "$api")"
+tag="$(jq -er .tag_name <<<"$release")"
+version="${tag#v}"
+url="$(jq -er --arg asset "$asset" '.assets[] | select(.name == $asset) | .browser_download_url' <<<"$release")"
+digest="$(jq -er --arg asset "$asset" '.assets[] | select(.name == $asset) | .digest' <<<"$release")"
+if [[ $digest != sha256:* ]]; then
+  echo "install-herdr: $tag has no SHA-256 digest for $asset; refusing to install it" >&2
+  exit 1
+fi
+sha256="${digest#sha256:}"
+
+installed=""
+if [[ -x $destination ]]; then
+  installed="$("$destination" --version 2>/dev/null | awk '{print $2}')" || true
+fi
+
+if $check; then
+  printf 'installed: %s\nrelease:   %s\n' "${installed:-none}" "$version"
+  [[ $installed == "$version" ]]
+  exit
+fi
+
+if [[ $installed == "$version" ]] &&
+  [[ $(sha256sum "$destination" | cut -d ' ' -f 1) == "$sha256" ]]; then
+  printf 'Herdr %s is already installed.\n' "$version"
+  exit 0
+fi
+
+# Work beside the destination so the final mv is an atomic rename.
+work="$(mktemp -d "$prefix/tmp/install-herdr.XXXXXX")"
+trap 'rm -rf -- "$work"' EXIT
+curl --fail --location --silent --show-error --output "$work/herdr" "$url"
+printf '%s  %s\n' "$sha256" "$work/herdr" | sha256sum --check --status
+chmod 755 "$work/herdr"
+if [[ $("$work/herdr" --version) != "herdr $version" ]]; then
+  echo "install-herdr: the downloaded $tag binary did not report herdr $version" >&2
+  exit 1
+fi
+mv -f -- "$work/herdr" "$destination"
+printf 'Installed Herdr %s at %s (was %s).\n' "$version" "$destination" "${installed:-not installed}"
+
+# A running local server keeps its old binary until it restarts.
+if "$destination" status server 2>/dev/null | grep -qx 'status: running'; then
+  echo "The local Herdr server is still running the old version. Restart it with 'herdr server stop' when convenient."
+fi

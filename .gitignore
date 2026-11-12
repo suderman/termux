@@ -1,5 +1,7 @@
 /config/pulse
 /config/emacs
+/config/herdr/*
+!/config/herdr/config.toml
 /config/gh/hosts.yml
 /shell
 /font*

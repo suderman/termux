@@ -207,6 +207,64 @@ mv ~/.termux/font.ttf.before-commit-mono ~/.termux/font.ttf
 termux-reload-settings
 ```
 
+## Herdr
+
+Herdr's official `herdr-linux-aarch64` release is a static Linux binary that
+runs natively in Termux, without proot. Herdr's installer refuses Android, so
+`install-herdr` installs and updates it instead:
+
+```sh
+install-herdr --check   # installed and latest stable versions; exits 1 when behind
+install-herdr           # install, or update to the latest stable release
+install-herdr 0.9.4     # pin or roll back to a release
+```
+
+It reads the release from GitHub's API and refuses an asset without GitHub's
+SHA-256 digest. It checks the download against that digest and checks that
+the new binary reports the expected version before renaming it over
+`$PREFIX/bin/herdr`. Any failure leaves the installed binary in place.
+`setup.sh` runs it, so `termux-update` keeps Herdr current; a pinned version
+lasts until the next setup run. A running local Herdr server keeps the old
+version until `herdr server stop`. Use `install-herdr` rather than
+`herdr update`. Servers on kit and cog update through NixOS; client and server
+versions only need to be compatible.
+
+`config/herdr/config.toml`, which Termux reads as `~/.config/herdr/config.toml`,
+copies the portable part of the NixOS flake's
+`modules/home/default/options/herdr/settings.nix`: keys, sidebar rows, and
+toasts. Update it when that file changes. It leaves out `keys.command`, whose
+edger and herdr-reclaim scripts live in the Nix store; commands advertised by
+a remote server run on that server, so they still work in kit and cog
+workspaces. It also leaves out `ui.sound`. Herdr keeps logs, sockets, and
+sessions in the same directory, and `.gitignore` tracks only `config.toml`.
+Apply an edit with the UI's reload config action or
+`herdr server reload-config`.
+
+`setup.sh` saves kit and cog as Herdr machines on their `default` sessions,
+skipping any already saved. Saving one only attaches to the server already
+running there; if a server is missing or incompatible, Herdr asks before
+installing or replacing it, and the default answer is No. Herdr keeps saved
+machines outside this repository, in
+`~/.local/state/herdr/client/endpoints.json`. Run `herdr`: the sidebar shows
+Local, kit, and cog, and `prefix+w` (`Alt+z`, then `w`) moves through
+workspaces on every machine.
+
+```sh
+herdr machine list              # saved machines and their IDs
+herdr machine status            # check each one without prompting
+herdr machine reconnect kit     # authenticate in this terminal and verify
+herdr machine add kit --remote-session default
+herdr --remote kit              # one-off attach to a single host
+```
+
+Background connections need the SSH key in the agent. Connecting through
+Termux's ssh config runs `ssh-unlock`, which asks for a fingerprint when the
+key has expired from the agent. If a machine shows `! auth`, run
+`herdr machine reconnect` with its name.
+
+Upstream does not support Android, so a future release could break this.
+Remote clipboard-image paste finds no image on Termux.
+
 ## Shared files
 
 `setup.sh` keeps these links consistent between Termux and the custom Emacs

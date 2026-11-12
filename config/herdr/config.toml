@@ -1,0 +1,48 @@
+# Herdr client settings for gem, kept in step with the portable part of the
+# NixOS flake's modules/home/default/options/herdr/settings.nix.
+#
+# Left out on purpose:
+# - keys.command: the Alt+hjkl/uiw edger bindings and prefix+t herdr-reclaim
+#   call Nix-store scripts. Custom commands advertised by a remote server run
+#   on that server, so they still work while a kit or cog workspace is active.
+# - ui.sound: it points at desktop paths.
+#
+# Herdr also keeps logs, sockets, and sessions in this directory;
+# .gitignore tracks only this file.
+
+onboarding = false
+
+[keys]
+prefix = "alt+z"
+
+new_workspace = "alt+shift+n"
+rename_workspace = "prefix+period"
+workspace_picker = "alt+a"
+detach = "prefix+d"
+
+new_tab = "alt+shift+t"
+rename_tab = "prefix+comma"
+previous_tab = "prefix+["
+next_tab = "prefix+]"
+move_tab_previous = "prefix+{"
+move_tab_next = "prefix+}"
+copy_mode = "prefix+m"
+
+split_horizontal = "prefix+u"
+split_vertical = "prefix+i"
+close_pane = "alt+shift+w"
+last_pane = "prefix+o"
+
+focus_pane_left = "prefix+h"
+focus_pane_down = "prefix+j"
+focus_pane_up = "prefix+k"
+focus_pane_right = "prefix+l"
+
+[ui]
+prompt_new_tab_name = false
+
+[ui.sidebar.spaces]
+rows = [["state_icon", "workspace", "branch"]]
+
+[ui.toast]
+delivery = "herdr"
