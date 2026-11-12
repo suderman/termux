@@ -102,7 +102,7 @@ Never issue an unchecked sequence of taps, swipes, typing, and key presses. Dial
 ## Herdr
 
 - Install and update Herdr only with `bin/install-herdr`. Never run Herdr's official installer, which refuses Android.
-- `config/herdr/config.toml` copies the portable part of the NixOS flake's `modules/home/default/options/herdr/settings.nix`. Keep `keys.command` and `ui.sound` out of it. Everything else Herdr writes in `config/herdr` is runtime state.
+- `~/.config/herdr/config.toml` links to `jon/profile/apps/herdr/config.toml` on shared storage, which kit exports from the NixOS flake's Herdr settings (`programs.herdr.exportSettings`). Change settings there, not on the phone. Everything in `config/herdr` is Herdr's runtime state and stays untracked.
 - Saved machines attach to the Herdr servers kit and cog already run. Never install, replace, restart, or hand off a remote server from the phone.
 
 ## SSH changes

@@ -147,7 +147,9 @@ mkdir -m700 -p "$HOME/.secrets" "$XDG_DATA_HOME/mail"
 
 # herdr: the official Linux aarch64 binary runs natively, but Herdr's installer
 # refuses Android. install-herdr installs or updates to the latest release.
+# kit exports the portable settings from the NixOS flake to the synced profile.
 install-herdr
+symlink /storage/emulated/0/jon/profile/apps/herdr/config.toml "$XDG_CONFIG_HOME/herdr/config.toml"
 
 # hermes-agent
 # curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash 

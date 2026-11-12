@@ -229,16 +229,16 @@ version until `herdr server stop`. Use `install-herdr` rather than
 `herdr update`. Servers on kit and cog update through NixOS; client and server
 versions only need to be compatible.
 
-`config/herdr/config.toml`, which Termux reads as `~/.config/herdr/config.toml`,
-copies the portable part of the NixOS flake's
-`modules/home/default/options/herdr/settings.nix`: keys, sidebar rows, and
-toasts. Update it when that file changes. It leaves out `keys.command`, whose
-edger and herdr-reclaim scripts live in the Nix store; commands advertised by
-a remote server run on that server, so they still work in kit and cog
-workspaces. It also leaves out `ui.sound`. Herdr keeps logs, sockets, and
-sessions in the same directory, and `.gitignore` tracks only `config.toml`.
-Apply an edit with the UI's reload config action or
-`herdr server reload-config`.
+Herdr's settings come from the NixOS flake. kit exports their portable part
+(`programs.herdr.exportSettings` in `modules/home/default/options/herdr/export.nix`)
+to `jon/profile/apps/herdr/config.toml`, Syncthing carries it to the phone,
+and `setup.sh` links `~/.config/herdr/config.toml` to it. The export leaves out
+`keys.command`, whose edger and herdr-reclaim scripts live in the Nix store;
+commands advertised by a remote server run on that server, so they still work
+in kit and cog workspaces. It also leaves out `ui.sound`. Change settings in
+the flake and switch kit, then use the UI's reload config action or
+`herdr server reload-config`. Herdr keeps logs, sockets, and sessions in
+`config/herdr`, which `.gitignore` excludes.
 
 `setup.sh` saves kit and cog as Herdr machines on their `default` sessions,
 skipping any already saved. Saving one only attaches to the server already
