@@ -255,15 +255,19 @@ workspaces on every machine.
 ```sh
 herdr machine list              # saved machines and their IDs
 herdr machine status            # check each one without prompting
-herdr machine reconnect kit     # authenticate in this terminal and verify
+ssh-unlock                      # load the key; Herdr reconnects within a minute
 herdr machine add kit --remote-session default
 herdr --remote kit              # one-off attach to a single host
 ```
 
-Background connections need the SSH key in the agent. Connecting through
-Termux's ssh config runs `ssh-unlock`, which asks for a fingerprint when the
-key has expired from the agent. If a machine shows `! auth`, run
-`herdr machine reconnect` with its name.
+Background connections need the SSH key in the agent. Herdr runs them with
+`BatchMode=yes`, so `ssh-unlock` does not ask for a fingerprint there; the
+machine shows `! auth` until the key is back. Run `ssh-unlock`, or any
+interactive ssh, to unlock it with a fingerprint, and Herdr reconnects at its
+next retry, about every 40 seconds. `herdr machine reconnect` fails on Android
+with "unsafe SSH control directory parent", even with the key loaded. Herdr
+0.9.5 keeps ssh control sockets in `/tmp/hssh-<uid>` on Linux, and Android's
+`/tmp` belongs to the `shell` user.
 
 Upstream does not support Android, so a future release could break this.
 Remote clipboard-image paste finds no image on Termux.
