@@ -1,0 +1,31 @@
+#!/data/data/com.termux/files/usr/bin/bash
+# Termux has no Wayland clipboard. In a remote workspace, Herdr's client runs
+# `wl-paste --type image/...` when its remote image paste key (Ctrl+V by
+# default) is pressed, then sends the image to that machine's agent pane.
+# Answer with the newest Android screenshot, but only a recent one, so an old
+# screenshot never captures Ctrl+V. Anything else finds nothing, and Herdr
+# passes the key through.
+set -eu
+
+screenshots=/storage/emulated/0/Pictures/Screenshots
+max_age_minutes=10
+
+type=""
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    -t | --type) type=${2-} && shift 2 ;;
+    --type=*) type=${1#--type=} && shift ;;
+    *) shift ;;
+  esac
+done
+
+case $type in
+  image/png) pattern='*.png' ;;
+  image/jpeg | image/jpg) pattern='*.jp*g' ;;
+  *) exit 1 ;;
+esac
+
+newest=$(find "$screenshots" -maxdepth 1 -type f -iname "$pattern" -mmin "-$max_age_minutes" \
+  -printf '%T@ %p\n' 2>/dev/null | sort -rn | awk 'NR == 1 { sub(/^[^ ]* /, ""); print }')
+[[ -n $newest ]] || exit 1
+exec cat -- "$newest"

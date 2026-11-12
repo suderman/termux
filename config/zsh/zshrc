@@ -59,6 +59,13 @@ tmux() {
   fi
 }
 
+# Herdr reads clipboard images with wl-paste only when WAYLAND_DISPLAY is set,
+# and bin/wl-paste answers with a recent Android screenshot. Set a placeholder
+# for the herdr command, and clear it again in Herdr panes, which inherit it
+# from the server, so other programs keep their usual clipboard.
+herdr() { WAYLAND_DISPLAY=${WAYLAND_DISPLAY:-android} command herdr "$@"; }
+[[ -n $HERDR_PANE_ID && $WAYLAND_DISPLAY == android ]] && unset WAYLAND_DISPLAY
+
 # Customize FZF
 source "$HOME/.config/zsh/fzf.sh"
 
