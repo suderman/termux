@@ -233,12 +233,15 @@ Herdr's settings come from the NixOS flake. kit exports their portable part
 (`programs.herdr.exportSettings` in `modules/home/default/options/herdr/export.nix`)
 to `jon/profile/apps/herdr/config.toml`, Syncthing carries it to the phone,
 and `setup.sh` links `~/.config/herdr/config.toml` to it. The export leaves out
-`keys.command`, whose edger and herdr-reclaim scripts live in the Nix store;
-commands advertised by a remote server run on that server, so they still work
-in kit and cog workspaces. It also leaves out `ui.sound`. Change settings in
-the flake and switch kit, then use the UI's reload config action or
-`herdr server reload-config`. Herdr keeps logs, sockets, and sessions in
-`config/herdr`, which `.gitignore` excludes.
+custom commands other than plugin actions, such as `herdr-reclaim`, because
+they name Nix-store scripts, and it leaves out `ui.sound`. The Alt+hjkl,
+Alt+u/i/w, and Alt+Shift+hjkl bindings call the
+[edger](https://github.com/suderman/edger) plugin, which `setup.sh` installs
+from GitHub and updates with `herdr plugin update --yes`; kit and cog link
+their own copy from the flake. Each machine runs the plugin where its panes
+run. Change settings in the flake and switch kit, then use the UI's reload
+config action or `herdr server reload-config`. Herdr keeps logs, sockets, and
+sessions in `config/herdr`, which `.gitignore` excludes.
 
 `setup.sh` saves kit and cog as Herdr machines on their `default` sessions,
 skipping any already saved. Saving one only attaches to the server already

@@ -150,6 +150,9 @@ mkdir -m700 -p "$HOME/.secrets" "$XDG_DATA_HOME/mail"
 # kit exports the portable settings from the NixOS flake to the synced profile.
 install-herdr
 symlink /storage/emulated/0/jon/profile/apps/herdr/config.toml "$XDG_CONFIG_HOME/herdr/config.toml"
+# The Alt+hjkl, Alt+u/i/w, and resize bindings call the edger plugin.
+herdr plugin list | grep -q '^- edger ' || herdr plugin install suderman/edger --yes
+herdr plugin update --yes
 
 # hermes-agent
 # curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash 
