@@ -1,0 +1,21 @@
+# Notmuch for gem, mirroring the NixOS settings. Paths are absolute because
+# the Emacs APK reads this through its own ~/.config/notmuch link.
+
+[database]
+path=/data/data/com.termux/files/home/.local/share/mail
+hook_dir=/data/data/com.termux/files/home/.termux/config/notmuch/default/hooks
+
+[maildir]
+synchronize_flags=true
+
+[new]
+ignore=.uidvalidity;.mbsyncstate;.sync-if-1
+tags=unread
+
+[search]
+exclude_tags=deleted;spam
+
+[user]
+name=Jon Suderman
+primary_email=jon@suderman.net
+other_email=jon@nonfiction.ca

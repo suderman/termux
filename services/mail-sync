@@ -1,0 +1,5 @@
+#!/data/data/com.termux/files/usr/bin/bash
+# Sync mail, then wait. runit starts this again when it exits.
+. "$HOME/.termux/config/mail/mail.conf"
+"$HOME/.termux/bin/mail-sync" 2>&1
+exec sleep "$((MAIL_SYNC_MINUTES * 60))"

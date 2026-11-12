@@ -1,0 +1,6 @@
+#!/data/data/com.termux/files/usr/bin/bash
+# Same folder tags as the NixOS post-new hook.
+set -euo pipefail
+notmuch tag -inbox '*'
+notmuch tag +inbox 'folder:suderman/Inbox or folder:nonfiction/Inbox'
+notmuch tag +spam -inbox 'folder:suderman/Junk or folder:nonfiction/Junk'

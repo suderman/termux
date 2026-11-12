@@ -52,6 +52,8 @@ if [ -d "$emacs_home" ] && [ -w "$emacs_home" ]; then
   symlink /storage/emulated/0/jon/org "$emacs_home/org"
   symlink "$HOME" "$emacs_home/termux"
   symlink "$HOME/src" "$emacs_home/src"
+  symlink "$XDG_CONFIG_HOME/notmuch" "$emacs_home/.config/notmuch"
+  symlink "$XDG_CONFIG_HOME/msmtp" "$emacs_home/.config/msmtp"
 else
   echo "Warning: Emacs app home is unavailable: $emacs_home" >&2
 fi
@@ -138,6 +140,11 @@ termux-job-scheduler \
 # syncthing
 pkg install -y syncthing
 
+# mail: mbsync, Notmuch, and msmtp, set in config/mail/mail.conf. App
+# passwords stay outside this public repository in ~/.secrets.
+pkg install -y isync notmuch msmtp
+mkdir -m700 -p "$HOME/.secrets" "$XDG_DATA_HOME/mail"
+
 # hermes-agent
 # curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash 
 # if install gets stuck:
@@ -170,6 +177,7 @@ sv-enable mpd
 sv-enable mpd-url
 sv-enable syncthing
 sv-enable ssh-agent
+sv-enable mail-sync
 
 for service in crond mpdscribble hermes; do
   if [ -d "$SVDIR/$service" ]; then
@@ -184,7 +192,7 @@ if tmux list-sessions >/dev/null 2>&1; then
 fi
 
 sshd -t
-for service in sshd ssh-agent mpd mpd-url syncthing crond mpdscribble hermes; do
+for service in sshd ssh-agent mpd mpd-url syncthing mail-sync crond mpdscribble hermes; do
   if [ -d "$SVDIR/$service" ]; then
     sv status "$service"
   fi

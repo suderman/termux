@@ -88,10 +88,16 @@ Never issue an unchecked sequence of taps, swipes, typing, and key presses. Dial
 - `termux-services` uses `SVDIR=$PREFIX/var/service`. Set it explicitly in scripts because noninteractive SSH does not load the profile hook.
 - Service templates in `services/` are the source of truth. `setup.sh` copies them to `$PREFIX/var/service/<name>/run`.
 - OpenSSH package upgrades recreate `$PREFIX/var/service/sshd/down`. Boot, job 1, and the Tasker poke must keep calling `sv-enable sshd`.
-- Intended enabled services are `sshd`, `mpd`, `mpd-url`, and `syncthing`.
+- Intended enabled services are `sshd`, `mpd`, `mpd-url`, `syncthing`, and `mail-sync`.
 - Keep `crond`, `mpdscribble`, and `hermes` disabled. Android jobs replace cron, mpdscribble is not configured, and Hermes is paused.
 - Do not reinstall the Hermes compiler and Node/Rust dependencies until Hermes is intentionally re-enabled.
 - Keep boot and job wake locks short-lived. GrapheneOS should allow unrestricted background battery usage for Termux instead of holding a permanent wake lock.
+
+## Mail
+
+- gem keeps its own IMAP copy at `~/.local/share/mail`, synced by `bin/mail-sync` from the `mail-sync` service. `config/mail/mail.conf` sets the interval and the SSH fallback host for `bin/notmuch-mail`, which Emacs uses as `notmuch-command`.
+- App passwords live in `~/.secrets/fastmail` and `~/.secrets/gmail`, outside this public repository. Never copy, print, or commit them.
+- Each account's `.sync-if-1` gate pauses its sync when it holds anything but `1`.
 
 ## SSH changes
 

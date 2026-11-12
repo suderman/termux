@@ -1,0 +1,14 @@
+#!/data/data/com.termux/files/usr/bin/bash
+# Emacs's notmuch-command on gem: the local mail store once it exists,
+# otherwise Notmuch on MAIL_FALLBACK_HOST over SSH.
+set -euo pipefail
+
+config=/data/data/com.termux/files/home/.termux/config
+. "$config/mail/mail.conf"
+
+if [[ -d /data/data/com.termux/files/home/.local/share/mail/.notmuch/xapian ]]; then
+  export NOTMUCH_CONFIG="$config/notmuch/default/config"
+  exec notmuch "$@"
+fi
+# ssh joins arguments into one remote shell command, so quote each one.
+exec ssh "$MAIL_FALLBACK_HOST" notmuch "${@@Q}"

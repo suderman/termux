@@ -1,0 +1,23 @@
+# msmtp for gem, mirroring the NixOS accounts. Emacs picks the account from
+# the From header. setup.sh links the Emacs APK's ~/.config/msmtp here.
+
+defaults
+auth on
+port 465
+tls on
+tls_starttls off
+tls_trust_file system
+
+account nonfiction
+host smtp.gmail.com
+from jon@nonfiction.ca
+user jon@nonfiction.ca
+passwordeval "tr -d '[:space:]' < /data/data/com.termux/files/home/.secrets/gmail"
+
+account suderman
+host smtp.fastmail.com
+from jon@suderman.net
+user suderman@fastmail.com
+passwordeval "tr -d '[:space:]' < /data/data/com.termux/files/home/.secrets/fastmail"
+
+account default : suderman

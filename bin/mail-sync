@@ -1,0 +1,22 @@
+#!/data/data/com.termux/files/usr/bin/bash
+# Sync and index gem's mail like the NixOS email-ACCOUNT services. An account
+# syncs only while its .sync-if-1 gate holds 1, and a busy account is skipped.
+# Paths are absolute because Emacs's G runs this with the APK's $HOME.
+set -euo pipefail
+
+mail=/data/data/com.termux/files/home/.local/share/mail
+config=/data/data/com.termux/files/home/.termux/config
+locks="${XDG_RUNTIME_DIR:-/data/data/com.termux/files/usr/var/run}"
+export NOTMUCH_CONFIG="$config/notmuch/default/config"
+
+for account in suderman nonfiction; do
+  dir="$mail/$account"
+  mkdir -m700 -p "$dir"
+  [[ -e "$dir/.sync-if-1" ]] || echo 0 >"$dir/.sync-if-1"
+  [[ "$(cat "$dir/.sync-if-1")" == "1" ]] || continue
+  (
+    flock -n 9 || exit 0
+    mbsync -c "$config/isyncrc" -q "$account"
+    notmuch new --quiet
+  ) 9>"$locks/email-$account.lock"
+done

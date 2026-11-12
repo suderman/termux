@@ -1,0 +1,102 @@
+# mbsync for gem, mirroring the NixOS accounts. Paths are absolute because the
+# Emacs APK runs this with its own $HOME. App passwords live in ~/.secrets.
+
+Sync All
+Create Near
+Expunge Both
+CopyArrivalDate yes
+SyncState *
+
+IMAPAccount nonfiction
+Host imap.gmail.com
+Port 993
+TLSType IMAPS
+User jon@nonfiction.ca
+PassCmd "tr -d '[:space:]' < /data/data/com.termux/files/home/.secrets/gmail"
+
+IMAPStore nonfiction-remote
+Account nonfiction
+
+MaildirStore nonfiction-local
+Inbox /data/data/com.termux/files/home/.local/share/mail/nonfiction/Inbox
+Path /data/data/com.termux/files/home/.local/share/mail/nonfiction/
+SubFolders Verbatim
+
+Channel nonfiction-Archive
+Far ":nonfiction-remote:[Gmail]/All Mail"
+Near :nonfiction-local:Archive
+
+Channel nonfiction-Drafts
+Far :nonfiction-remote:[Gmail]/Drafts
+Near :nonfiction-local:Drafts
+
+Channel nonfiction-Inbox
+Far :nonfiction-remote:INBOX
+Near :nonfiction-local:Inbox
+
+Channel nonfiction-Junk
+Far :nonfiction-remote:[Gmail]/Spam
+Near :nonfiction-local:Junk
+
+Channel nonfiction-Sent
+Far ":nonfiction-remote:[Gmail]/Sent Mail"
+Near :nonfiction-local:Sent
+
+Channel nonfiction-Trash
+Far :nonfiction-remote:[Gmail]/Trash
+Near :nonfiction-local:Trash
+
+Group nonfiction
+Channel nonfiction-Archive
+Channel nonfiction-Drafts
+Channel nonfiction-Inbox
+Channel nonfiction-Junk
+Channel nonfiction-Sent
+Channel nonfiction-Trash
+
+IMAPAccount suderman
+Host imap.fastmail.com
+Port 993
+TLSType IMAPS
+User suderman@fastmail.com
+PassCmd "tr -d '[:space:]' < /data/data/com.termux/files/home/.secrets/fastmail"
+
+IMAPStore suderman-remote
+Account suderman
+
+MaildirStore suderman-local
+Inbox /data/data/com.termux/files/home/.local/share/mail/suderman/Inbox
+Path /data/data/com.termux/files/home/.local/share/mail/suderman/
+SubFolders Verbatim
+
+Channel suderman-Archive
+Far :suderman-remote:Archive
+Near :suderman-local:Archive
+
+Channel suderman-Drafts
+Far :suderman-remote:Drafts
+Near :suderman-local:Drafts
+
+Channel suderman-Inbox
+Far :suderman-remote:INBOX
+Near :suderman-local:Inbox
+
+Channel suderman-Junk
+Far :suderman-remote:Spam
+Near :suderman-local:Junk
+
+Channel suderman-Sent
+Far :suderman-remote:Sent
+Near :suderman-local:Sent
+
+Channel suderman-Trash
+Far :suderman-remote:Trash
+Near :suderman-local:Trash
+
+Group suderman
+Channel suderman-Archive
+Channel suderman-Drafts
+Channel suderman-Inbox
+Channel suderman-Junk
+Channel suderman-Sent
+Channel suderman-Trash
