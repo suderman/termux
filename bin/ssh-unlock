@@ -43,9 +43,33 @@ init() {
   echo "Stored. ssh-unlock will now ask for a fingerprint instead."
 }
 
+# True when the ssh that ran this, through its Match exec shell, has BatchMode
+# on. Herdr's background reconnects do, and abandon the fingerprint dialog when
+# they time out, which Termux:API reports as "Error in ResultReturner".
+batch() {
+  local pid=$PPID stat arg _
+  local -a args
+  for _ in 1 2 3 4; do
+    [[ -r /proc/$pid/comm ]] || return 1
+    if [[ $(<"/proc/$pid/comm") == ssh ]]; then
+      mapfile -d '' args <"/proc/$pid/cmdline"
+      for arg in "${args[@]}"; do
+        arg=${arg,,}
+        [[ ${arg#-o} =~ ^batchmode[=[:space:]]+yes$ ]] && return 0
+      done
+      return 1
+    fi
+    read -r stat <"/proc/$pid/stat" || return 1
+    read -r _ pid _ <<<"${stat##*) }"
+  done
+  return 1
+}
+
 unlock() {
   local pass
   ssh-add -l 2>/dev/null | grep -qF "$(ssh-keygen -lf "$key.pub" | cut -d' ' -f2)" && return
+  # Batch ssh cannot prompt; leave it to fail until an interactive unlock.
+  batch && return 1
   if [[ -f $store ]] &&
     termux-fingerprint -t "Unlock ssh key" -d "for one hour" | jq -e '.auth_result == "AUTH_RESULT_SUCCESS"' >/dev/null &&
     pass=$(SSH_UNLOCK_SECRET=$(secret) openssl enc -d -aes-256-cbc -pbkdf2 -pass env:SSH_UNLOCK_SECRET -in "$store"); then
