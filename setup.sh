@@ -185,6 +185,18 @@ for service in crond mpdscribble hermes; do
   fi
 done
 
+# Android shared storage keeps every file at 0660. Unless these folders ignore
+# permissions, gem announces a change for each file it receives with other
+# permissions, and those races leave sync-conflict copies on the other hosts.
+for _ in $(seq 30); do
+  syncthing cli config folders list >/dev/null 2>&1 && break
+  sleep 1
+done
+for folder in ORG MEDIA PROFILE; do
+  syncthing cli config folders "$folder" ignore-perms set true ||
+    echo "Warning: could not set ignorePerms on Syncthing folder $folder" >&2
+done
+
 termux-reload-settings
 
 if tmux list-sessions >/dev/null 2>&1; then
