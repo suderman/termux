@@ -201,9 +201,14 @@ for _ in $(seq 30); do
   syncthing cli config folders list >/dev/null 2>&1 && break
   sleep 1
 done
+#
+# The file watcher reports local changes within seconds, so a full rescan of
+# these 73,000 FUSE files only needs to run daily as a safety net.
 for folder in ORG MEDIA PROFILE; do
   syncthing cli config folders "$folder" ignore-perms set true ||
     echo "Warning: could not set ignorePerms on Syncthing folder $folder" >&2
+  syncthing cli config folders "$folder" rescan-intervals set 86400 ||
+    echo "Warning: could not set the rescan interval on Syncthing folder $folder" >&2
 done
 
 # Saved Herdr machines attach to the servers these hosts already run. Adding one
