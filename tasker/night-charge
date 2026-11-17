@@ -1,0 +1,24 @@
+#!/data/data/com.termux/files/usr/bin/sh
+# Tasker's "Night charge" profile runs `night-charge on` when gem sits on the
+# wireless pad at night and `night-charge off` when it leaves. A slow pad only
+# just outpaces an awake phone, so Syncthing and mail sync wait until morning.
+# Tasker turns location off and on itself.
+
+export PATH="$PREFIX/bin:$HOME/bin:$PATH"
+export SVDIR="$PREFIX/var/service"
+flag="$PREFIX/var/run/night-charge"
+
+case "$1" in
+on)
+  touch "$flag"
+  sv down syncthing mail-sync
+  ;;
+off)
+  rm -f "$flag"
+  sv up syncthing mail-sync
+  ;;
+*)
+  echo "usage: night-charge on|off" >&2
+  exit 2
+  ;;
+esac

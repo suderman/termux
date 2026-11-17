@@ -10,5 +10,7 @@ fi
 
 # Gentle nudges. These should be harmless if already running.
 sv-enable sshd 2>/dev/null || true
-sv up syncthing mpd 2>/dev/null || true
+sv up mpd 2>/dev/null || true
+# Night charge mode keeps Syncthing down until gem leaves the pad.
+[ -e "$PREFIX/var/run/night-charge" ] || sv up syncthing 2>/dev/null || true
 # sv up hermes 2>/dev/null || true
