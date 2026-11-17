@@ -70,6 +70,7 @@ Never issue an unchecked sequence of taps, swipes, typing, and key presses. Dial
 - Tasker has All files access through the `MANAGE_EXTERNAL_STORAGE` app-op and is exempt from battery optimization.
 - The Download sweep uses enabled `MovedTo` and `ClosedWrite` File Modified profiles on `Download/` and `Download/Telegram/`. Both run `Drain Downloads`, which moves `%evtprm1` to `jon/inbox` while excluding `.pending-*`, `.crdownload`, `.part`, and `.tmp` paths.
 - Keep `Drain Downloads` Collision Handling set to `Run Both Together`. `Abort New Task` drops Vanadium's final `MovedTo` event when it closely follows a temporary-file `ClosedWrite` event.
+- The `Night Charge` profile in Tasker's Termux project pauses location, Syncthing, and mail sync on the wireless pad from 22:00 to 07:00. README's "Battery and night charging" section describes it, and `tasker/Night_Charge.prf.xml` is its importable export. Re-export it after changing the profile in Tasker.
 - Vanadium downloads through `.pending-*` and renames to the final name. FairEmail 1Password attachment saves open Android's document picker in `Download`; the final Save writes the selected filename directly and produces `ClosedWrite`.
 - `android-open net.dinglisch.android.taskerm` may resolve to Tasker's Secondary App alias. Use `adb shell am start -n net.dinglisch.android.taskerm/.Tasker` to open Tasker's main UI when that occurs.
 - Inspect Tasker before navigating. Add profiles, tasks, contexts, events, actions, variables, conditions, and permissions incrementally, checking each name and value.

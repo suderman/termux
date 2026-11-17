@@ -377,3 +377,52 @@ export SVDIR="$PREFIX/var/service"
 . "$PREFIX/etc/profile.d/start-services.sh"
 sv-enable sshd
 ```
+
+## Battery and night charging
+
+gem's idle drain was investigated on 2026-11-16 and 2026-11-17. Mail syncs
+hourly (`MAIL_SYNC_MINUTES` in `config/mail/mail.conf`), since FairEmail
+already notifies and Emacs's `G` syncs on demand. `setup.sh` sets Syncthing's
+full rescans of ORG, MEDIA, and PROFILE to daily; the file watcher still sees
+changes within seconds.
+
+A slow wireless pad only just outpaces an awake phone, so the Tasker profile
+**Night Charge** quiets gem while it sits on the pad between 22:00 and 07:00:
+
+| | Night Charge On (enter) | Night Charge Off (exit) |
+| --- | --- | --- |
+| Location Mode | Off, continue after error | High Accuracy (on), continue after error |
+| Termux:Tasker | `night-charge on` | `night-charge off` |
+
+Contexts: State › Power › Power, Source Wireless; and Time from 10:00 PM till
+7:00 AM. `tasker/night-charge` runs `sv down` or `sv up` on `syncthing` and
+`mail-sync` and keeps a flag at `$PREFIX/var/run/night-charge`, which stops
+`tasker/poke-services` from bringing Syncthing back early. Location off stops
+Home Assistant's all-night GPS; Android may show a "No location access" notice
+while it is off.
+
+To rebuild the profile, import `tasker/Night_Charge.prf.xml`: copy it to
+`/sdcard/Tasker/`, then in Tasker's Termux project long-press the Profiles tab
+and choose Import Profile. The profile and both tasks come from Tasker 6.7.9.
+
+Tasker needs three grants for this, recorded in `permission.sh` and applied
+through `rish` as shown above:
+
+- `WRITE_SECURE_SETTINGS`, for the Location Mode action.
+- The `WRITE_SETTINGS` app-op ("Modify system settings"), which Tasker asks for
+  when editing that action.
+- `com.termux.permission.RUN_COMMAND`, without which Termux:Tasker reports a
+  "missing, disabled, not exported or no permission" plugin error.
+
+To test without the pad, run each task from Tasker's Tasks tab, then check:
+
+```sh
+adb shell settings get secure location_mode   # 0 after On, 3 after Off
+ssh gem 'SVDIR=$PREFIX/var/service sv status syncthing mail-sync'
+```
+
+Other findings to keep in mind: Android's battery screen lists Termux, Emacs,
+Termux:API, and Termux:Boot together as "Emacs shared user", because they share
+one UID; Syncthing and Herdr are most of it. The 80% charge limit is on
+(`battery_charge_limit=1`), and `stay_on_while_plugged_in=7` is intentional for
+June development.
