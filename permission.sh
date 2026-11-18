@@ -11,3 +11,7 @@ pm grant net.dinglisch.android.taskerm android.permission.WRITE_SECURE_SETTINGS
 appops set net.dinglisch.android.taskerm WRITE_SETTINGS allow
 # Termux:Tasker runs ~/.termux/tasker scripts only for hosts holding this.
 pm grant net.dinglisch.android.taskerm com.termux.permission.RUN_COMMAND
+# Battery "Restricted" for Streamyfin: a stalled background job held gem awake all
+# night on the charger, where job quotas don't apply. Playback is unaffected; downloads
+# run only while the app is open. Set 2026-11-18.
+cmd appops set com.fredrikburmester.streamyfin RUN_ANY_IN_BACKGROUND ignore

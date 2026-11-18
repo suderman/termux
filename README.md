@@ -426,3 +426,27 @@ Termux:API, and Termux:Boot together as "Emacs shared user", because they share
 one UID; Syncthing and Herdr are most of it. The 80% charge limit is on
 (`battery_charge_limit=1`), and `stay_on_while_plugged_in=7` is intentional for
 June development.
+
+The first night with Night Charge (2026-11-17) charged faster, about 4.9% an
+hour against 3.5% the night before. Two more fixes came out of it on
+2026-11-18:
+
+- Streamyfin's background job stalled and restarted every 10 minutes from 22:25
+  to 05:00. It moved no data, but it kept gem from sleeping; job quotas don't
+  apply while charging. `permission.sh` sets Streamyfin's battery use to
+  Restricted (`RUN_ANY_IN_BACKGROUND ignore`). Playback works when the app is
+  open; downloads run only while it is open.
+- Android bills all tunnel traffic to Tailscale, so it tops the battery screen
+  whenever other apps talk to home over it. Tailscale also woke the cellular
+  radio every 2 minutes on Wi-Fi because "Mobile data always active" was on.
+  `android-settings.conf` turns that off. To check after a night, look for
+  `wakeupap=u0a234` followed by `+mobile_radio` in
+  `adb shell dumpsys batterystats --history`.
+- kit's Herdr kept gem connected as a saved machine. With every pane idle, that
+  link still moved 3 to 6 packets a second through the tunnel day and night.
+  gem is now disabled on kit (`herdr machine disable <id>` takes the ID from
+  `herdr machine list`, not the label). Run `herdr machine enable <id>` on kit
+  to get gem's panes in its sidebar again, and disable it when done.
+
+To find what kept gem awake on a charger, look for `+longwake=` entries and
+repeated `+job=` lines in that history.
