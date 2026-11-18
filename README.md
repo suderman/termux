@@ -444,9 +444,9 @@ hour against 3.5% the night before. Two more fixes came out of it on
   `adb shell dumpsys batterystats --history`.
 - kit's Herdr kept gem connected as a saved machine. With every pane idle, that
   link still moved 3 to 6 packets a second through the tunnel day and night.
-  gem is now disabled on kit (`herdr machine disable <id>` takes the ID from
-  `herdr machine list`, not the label). Run `herdr machine enable <id>` on kit
-  to get gem's panes in its sidebar again, and disable it when done.
+  gem is now disabled on kit and cog (`herdr machine disable <id>` takes the ID
+  from `herdr machine list`, not the label). Run `herdr machine enable <id>`
+  there to get gem's panes in the sidebar again, and disable it when done.
 
 To find what kept gem awake on a charger, look for `+longwake=` entries and
 repeated `+job=` lines in that history.
